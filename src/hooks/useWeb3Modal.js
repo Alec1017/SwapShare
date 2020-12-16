@@ -1,5 +1,4 @@
 import { useCallback, useState } from "react";
-import { Web3Provider } from "@ethersproject/providers";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
@@ -38,7 +37,7 @@ function useWeb3Modal(config = {}) {
     }
 
     if (newProvider) {
-      setProvider(new Web3Provider(newProvider));
+      setProvider(newProvider)
     }
   }, [web3Modal]);
 

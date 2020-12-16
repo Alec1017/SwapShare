@@ -42,6 +42,7 @@ const App = () => {
       window.ethereum.request({method: 'eth_requestAccounts'}).then((accounts) => {
         setAccount(accounts[0])
       })
+      setWeb3(new Web3(provider))
     }
   }, [provider])
 
@@ -52,13 +53,10 @@ const App = () => {
   }, [account])
 
   async function loadBlockchainData() {
-    const ganacheWeb3 = new Web3('http://172.28.208.1:7545')
-    const netID = await ganacheWeb3.eth.net.getId()
-
-    const SimpleSmartContractData = SimpleSmartContract.networks[netID]
+    const SimpleSmartContractData = SimpleSmartContract.networks[networkID]
 
     if (SimpleSmartContractData) {
-      const simpleContract = new ganacheWeb3.eth.Contract(SimpleSmartContract.abi, SimpleSmartContractData.address);
+      const simpleContract = new web3.eth.Contract(SimpleSmartContract.abi, SimpleSmartContractData.address);
       simpleContract.methods.hello().call().then(setBlockchainMessage)
     }
   }
@@ -68,24 +66,20 @@ const App = () => {
   }
 
   function handleSubmit(event) {
-    const ganacheWeb3 = new Web3('http://172.28.208.1:7545')
-
-    const StorageData = Storage.networks["5777"]
+    const StorageData = Storage.networks[networkID]
 
     if (StorageData) {
-      const storageContract = new ganacheWeb3.eth.Contract(Storage.abi, StorageData.address);
+      const storageContract = new web3.eth.Contract(Storage.abi, StorageData.address);
       storageContract.methods.set(storageValue).send({from: account})
     }
     event.preventDefault()
   }
 
   function getValue() {
-    const ganacheWeb3 = new Web3('http://172.28.208.1:7545')
-
-    const StorageData = Storage.networks["5777"]
+    const StorageData = Storage.networks[networkID]
 
     if (StorageData) {
-      const storageContract = new ganacheWeb3.eth.Contract(Storage.abi, StorageData.address);
+      const storageContract = new web3.eth.Contract(Storage.abi, StorageData.address);
       storageContract.methods.data().call().then(setBlockchainStorageValue)
     }
   }

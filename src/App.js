@@ -49,7 +49,7 @@ const App = () => {
   }, [account])
 
   async function loadBlockchainData() {
-    const ganacheWeb3 = new Web3('http://172.17.80.1:7545')
+    const ganacheWeb3 = new Web3('http://172.28.208.1:7545')
     const netID = await ganacheWeb3.eth.net.getId()
 
     const SimpleSmartContractData = SimpleSmartContract.networks[netID]

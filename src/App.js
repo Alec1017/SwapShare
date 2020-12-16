@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Web3 from 'web3';
 
 import SimpleSmartContract from './abis/SimpleSmartContract.json'
+import Storage from './abis/Storage.json'
 import logo from './logo.svg';
 import './App.css';
 import { Body, Button, Header } from "./components";
@@ -30,6 +31,8 @@ const App = () => {
   const [account, setAccount] = useState(null)
   const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal()
   const [blockchainMessage, setBlockchainMessage] = useState(null)
+  const [storageValue, setStorageValue] = useState('')
+  const [blockchainStorageValue, setBlockchainStorageValue] = useState('')
 
   useEffect(() => {
     if (provider != null) {
@@ -60,6 +63,33 @@ const App = () => {
     }
   }
 
+  function handleChange(event) {
+    setStorageValue(event.target.value)
+  }
+
+  function handleSubmit(event) {
+    const ganacheWeb3 = new Web3('http://172.28.208.1:7545')
+
+    const StorageData = Storage.networks["5777"]
+
+    if (StorageData) {
+      const storageContract = new ganacheWeb3.eth.Contract(Storage.abi, StorageData.address);
+      storageContract.methods.set(storageValue).send({from: account})
+    }
+    event.preventDefault()
+  }
+
+  function getValue() {
+    const ganacheWeb3 = new Web3('http://172.28.208.1:7545')
+
+    const StorageData = Storage.networks["5777"]
+
+    if (StorageData) {
+      const storageContract = new ganacheWeb3.eth.Contract(Storage.abi, StorageData.address);
+      storageContract.methods.data().call().then(setBlockchainStorageValue)
+    }
+  }
+
   return (
     <div className="App">
       <Header>
@@ -71,7 +101,22 @@ const App = () => {
           <div>Your account: {account}</div>}
         {blockchainMessage &&
           <div>The blockchain says: {blockchainMessage}</div>}
+        
+        {account && 
+          <form onSubmit={handleSubmit}>
+            <label>
+              Value: 
+              <input type="text" value={storageValue} onChange={handleChange} />
+            </label>
+            <input type="submit" value="Submit" />
+          </form>
+        }
+        {account &&
+          <Button onClick={getValue}>get value</Button>
+        }
+        <div>{blockchainStorageValue}</div>
       </Body>
+
     </div>
   );
 }

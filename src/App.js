@@ -1,29 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import Web3 from 'web3';
+import Web3 from 'web3'
 
 import SimpleSmartContract from './abis/SimpleSmartContract.json'
 import Storage from './abis/Storage.json'
-import logo from './logo.svg';
-import './App.css';
-import { Body, Button, Header } from "./components";
-import useWeb3Modal from "./hooks/useWeb3Modal";
+import logo from './logo.svg'
+import './App.css'
+import { Body, Button, Header } from './components'
+import WalletButton from './components/WalletButton'
+import useWeb3Modal from './hooks/useWeb3Modal'
 
-
-function WalletButton({ provider, loadWeb3Modal, logoutOfWeb3Modal }) {
-  return (
-    <Button
-      onClick={() => {
-        if (!provider) {
-          loadWeb3Modal();
-        } else {
-          logoutOfWeb3Modal();
-        }
-      }}
-    >
-      {!provider ? "Connect Wallet" : "Disconnect Wallet"}
-    </Button>
-  );
-}
 
 const App = () => {
   const [web3, setWeb3] = useState({})
@@ -36,7 +21,7 @@ const App = () => {
 
   useEffect(() => {
     if (provider != null) {
-      window.ethereum.autoRefreshOnNetworkChange = false;
+      window.ethereum.autoRefreshOnNetworkChange = false
 
       setNetworkID(window.ethereum.networkVersion)
       window.ethereum.request({method: 'eth_requestAccounts'}).then((accounts) => {
@@ -56,7 +41,7 @@ const App = () => {
     const SimpleSmartContractData = SimpleSmartContract.networks[networkID]
 
     if (SimpleSmartContractData) {
-      const simpleContract = new web3.eth.Contract(SimpleSmartContract.abi, SimpleSmartContractData.address);
+      const simpleContract = new web3.eth.Contract(SimpleSmartContract.abi, SimpleSmartContractData.address)
       simpleContract.methods.hello().call().then(setBlockchainMessage)
     }
   }
@@ -69,7 +54,7 @@ const App = () => {
     const StorageData = Storage.networks[networkID]
 
     if (StorageData) {
-      const storageContract = new web3.eth.Contract(Storage.abi, StorageData.address);
+      const storageContract = new web3.eth.Contract(Storage.abi, StorageData.address)
       storageContract.methods.set(storageValue).send({from: account})
     }
     event.preventDefault()
@@ -79,8 +64,8 @@ const App = () => {
     const StorageData = Storage.networks[networkID]
 
     if (StorageData) {
-      const storageContract = new web3.eth.Contract(Storage.abi, StorageData.address);
-      storageContract.methods.data().call().then(setBlockchainStorageValue)
+      const storageContract = new web3.eth.Contract(Storage.abi, StorageData.address)
+      storageContract.methods.get().call().then(setBlockchainStorageValue)
     }
   }
 

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
@@ -12,8 +12,6 @@ function useWeb3Modal(config = {}) {
   const [provider, setProvider] = useState();
   const { infuraId = INFURA_ID, NETWORK = NETWORK_NAME } = config;
 
-  // Web3Modal also supports many other wallets.
-  // You can see other options at https://github.com/Web3Modal/web3modal
   const web3Modal = new Web3Modal({
     network: NETWORK,
     cacheProvider: true,
@@ -25,10 +23,10 @@ function useWeb3Modal(config = {}) {
         },
       },
     },
-  });
+  })
 
   // Open wallet selection modal.
-  const loadWeb3Modal = useCallback(async () => {
+  const loadWeb3Modal = async () => {
     let newProvider = null;
     try {
       newProvider = await web3Modal.connect();
@@ -39,17 +37,17 @@ function useWeb3Modal(config = {}) {
     if (newProvider) {
       setProvider(newProvider)
     }
-  }, [web3Modal]);
+  }
 
   // Disconnect from wallet
-  const logoutOfWeb3Modal = useCallback(async () => {
+  const logoutOfWeb3Modal = async () => {
     if (window.web3.currentProvider && window.web3.currentProvider.close) {
       await window.web3.currentProvider.close();
     }
     web3Modal.clearCachedProvider();
     window.location.reload();
     setProvider(null);
-  }, [web3Modal]);
+  }
 
   return [provider, loadWeb3Modal, logoutOfWeb3Modal];
 }

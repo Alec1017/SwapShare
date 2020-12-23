@@ -1,23 +1,27 @@
 import React, { useEffect, useState } from 'react'
 import Web3 from 'web3'
 
-import SimpleSmartContract from './abis/SimpleSmartContract.json'
-import Storage from './abis/Storage.json'
-import logo from './logo.svg'
+import Escrow from './abis/Escrow.json'
+
 import './App.css'
-import { Body, Button, Header } from './components'
+import logo from './logo.svg'
+import { Body, Header } from './components'
 import WalletButton from './components/WalletButton'
 import useWeb3Modal from './hooks/useWeb3Modal'
 
+import Form from 'react-bootstrap/Form'
+import Button from 'react-bootstrap/Button'
+
 
 const App = () => {
-  const [web3, setWeb3] = useState({})
+  const [web3, setWeb3] = useState(null)
   const [networkID, setNetworkID] = useState(null)
   const [account, setAccount] = useState(null)
   const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal()
-  const [blockchainMessage, setBlockchainMessage] = useState(null)
-  const [storageValue, setStorageValue] = useState('')
-  const [blockchainStorageValue, setBlockchainStorageValue] = useState('')
+
+  const [escrowContract, setEscrowContract] = useState(null)
+
+  const [ethAmount, setEthAmount] = useState('')
 
   useEffect(() => {
     if (provider != null) {
@@ -31,69 +35,59 @@ const App = () => {
     }
   }, [provider])
 
+
   useEffect(() => {
-    if (account != null) {
-      loadBlockchainData()
+    if (web3 != null) {
+      setEscrowContract(new web3.eth.Contract(
+        Escrow.abi,
+        Escrow.networks[networkID].address
+      ))
     }
-  }, [account])
+  }, [web3])
 
-  async function loadBlockchainData() {
-    const SimpleSmartContractData = SimpleSmartContract.networks[networkID]
 
-    if (SimpleSmartContractData) {
-      const simpleContract = new web3.eth.Contract(SimpleSmartContract.abi, SimpleSmartContractData.address)
-      simpleContract.methods.hello().call().then(setBlockchainMessage)
-    }
+  const handleChange = setFunc => e => {
+    setFunc(e.target.value)
   }
 
-  function handleChange(event) {
-    setStorageValue(event.target.value)
-  }
+  function sendETH(event) {
+    const weiAmount = web3.utils.toWei(ethAmount, 'ether');
 
-  function handleSubmit(event) {
-    const StorageData = Storage.networks[networkID]
+    escrowContract.methods
+      .deposit(account)
+      .send({
+        from: account,
+        value: weiAmount
+      })
 
-    if (StorageData) {
-      const storageContract = new web3.eth.Contract(Storage.abi, StorageData.address)
-      storageContract.methods.set(storageValue).send({from: account})
-    }
     event.preventDefault()
   }
 
-  function getValue() {
-    const StorageData = Storage.networks[networkID]
-
-    if (StorageData) {
-      const storageContract = new web3.eth.Contract(Storage.abi, StorageData.address)
-      storageContract.methods.get().call().then(setBlockchainStorageValue)
-    }
+  function withdrawETH() {
+    escrowContract.methods
+      .withdraw(account)
+      .send({from: account})
   }
 
   return (
     <div className="App">
       <Header>
+        <div className="mr-2">{account}</div>
         <WalletButton provider={provider} loadWeb3Modal={loadWeb3Modal} logoutOfWeb3Modal={logoutOfWeb3Modal} />
       </Header>
       <Body>
         <img src={logo} className="App-logo" alt="logo" />
-        {account && 
-          <div>Your account: {account}</div>}
-        {blockchainMessage &&
-          <div>The blockchain says: {blockchainMessage}</div>}
-        
-        {account && 
-          <form onSubmit={handleSubmit}>
-            <label>
-              Value: 
-              <input type="text" value={storageValue} onChange={handleChange} />
-            </label>
-            <input type="submit" value="Submit" />
-          </form>
+        {web3 &&
+          <div>
+            <Form className="pt-4" onSubmit={sendETH}>
+              <Form.Label>Send ETH to escrow</Form.Label>
+              <Form.Control placeholder="ETH amount" value={ethAmount} onChange={handleChange(setEthAmount)} />
+              <Form.Text className="text-muted">Your ETH will not be lost</Form.Text>
+              <Button className="mt-2" variant="light" type="submit">Submit</Button>
+              <Button className="ml-2 mt-2" variant="primary" onClick={withdrawETH}>Withdraw ETH</Button>
+            </Form>
+          </div>
         }
-        {account &&
-          <Button onClick={getValue}>get value</Button>
-        }
-        <div>{blockchainStorageValue}</div>
       </Body>
 
     </div>

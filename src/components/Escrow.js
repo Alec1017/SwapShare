@@ -18,10 +18,8 @@ const Escrow = ({web3, account, escrowContract}) => {
   const [escrowTransactions, setEscrowTransactions] = useState(null)
 
   useEffect(() => {
-    if (escrowContract != null) {
-        getDeposits()
-    }
-  }, [escrowContract])
+    getDeposits()
+  }, [])
 
   function getDeposits() {
     escrowContract.methods
@@ -72,30 +70,26 @@ const Escrow = ({web3, account, escrowContract}) => {
   return (
     <div style={{display: 'flex', backgroundColor: '#282c34', justifyContent: 'center'}}>
       <Body>
-        {web3 &&
-          <div>
-            <Form className="pt-4" onSubmit={sendETH} style={{display: 'flex', flexDirection: 'column'}}>
-              <Form.Label>Send ETH to escrow</Form.Label>
-              <Form.Control placeholder="ETH amount" value={ethAmount} onChange={handleChange(setEthAmount)} />
-              <Form.Text className="text-muted">Amount of ETH to store</Form.Text>
-              <Flatpickr className="mt-2"
-                options={{ 
-                  minDate: "2017-01-01",
-                  enableTime: true,
-                  dateFormat: "M d, Y  h:i K",
-                  defaultDate: "today",
-                  minDate: "today" 
-                }}
-                onChange={date => {
-                  let utcTimestamp = date[0].getTime() / 1000
-                  setExpirationDate(utcTimestamp)
-                }}
-              />
-              <Form.Text className="text-muted">Date and time when you can withdraw again</Form.Text>
-              <Button className="mt-2" variant="light" type="submit">Submit</Button>
-            </Form>
-          </div>
-        }
+        <Form className="pt-4" onSubmit={sendETH} style={{display: 'flex', flexDirection: 'column'}}>
+            <Form.Label>Send ETH to escrow</Form.Label>
+            <Form.Control placeholder="ETH amount" value={ethAmount} onChange={handleChange(setEthAmount)} />
+            <Form.Text className="text-muted">Amount of ETH to store</Form.Text>
+            <Flatpickr className="mt-2"
+            options={{ 
+                minDate: "2017-01-01",
+                enableTime: true,
+                dateFormat: "M d, Y  h:i K",
+                defaultDate: "today",
+                minDate: "today" 
+            }}
+            onChange={date => {
+                let utcTimestamp = date[0].getTime() / 1000
+                setExpirationDate(utcTimestamp)
+            }}
+            />
+            <Form.Text className="text-muted">Date and time when you can withdraw again</Form.Text>
+            <Button className="mt-2" variant="light" type="submit">Submit</Button>
+        </Form>
       </Body>
       <Body>
         {escrowTransactions &&

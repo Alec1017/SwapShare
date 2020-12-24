@@ -2,7 +2,7 @@ import styled from "styled-components"
 
 export const Header = styled.header`
   background-color: #282c34;
-  min-height: 70px;
+  min-height: 10vh;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -14,7 +14,7 @@ export const Body = styled.div`
   align-items: center;
   background-color: #282c34;
   color: white;
-  min-height: 100vh;
+  min-height: 90vh;
   font-size: 1.2rem;
   display: flex;
   flex-direction: column;

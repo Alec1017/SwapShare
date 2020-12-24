@@ -14,11 +14,11 @@ export const Body = styled.div`
   align-items: center;
   background-color: #282c34;
   color: white;
-  min-height: calc(100vh - 70px);
+  min-height: 100vh;
   font-size: 1.2rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  padding-top: 7rem;
 `;
 
 export const Image = styled.img`

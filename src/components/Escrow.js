@@ -11,58 +11,83 @@ import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 
 
-const Escrow = ({web3, account, escrowContract}) => {
-  const [ethAmount, setEthAmount] = useState('')
+const Escrow = ({web3, account, escrowContract, DAIContract}) => {
+  const [daiAmount, setDaiAmount] = useState('')
   const [expirationDate, setExpirationDate] = useState(null)
 
   const [escrowTransactions, setEscrowTransactions] = useState(null)
+  const [approved, setApproved] = useState(false)
 
   useEffect(() => {
-    getDeposits()
+    // getDeposits()
   }, [])
 
-  function getDeposits() {
-    escrowContract.methods
-    .getAllDeposits(account)
-    .call()
-    .then(result => {
-        let transactions = [];
-        result.map((value, index) => {
-            const now = new Date()
-            const expiration = new Date(parseInt(value[0]) * 1000)
+  // function getDeposits() {
+  //   escrowContract.methods
+  //   .getAllDeposits(account)
+  //   .call()
+  //   .then(result => {
+  //       let transactions = [];
+  //       result.map((value, index) => {
+  //           const now = new Date()
+  //           const expiration = new Date(parseInt(value[0]) * 1000)
 
-            transactions.push({
-                'index': index,
-                'expirationDate': expiration.toDateString(),
-                'expirationTime': expiration.toLocaleTimeString(),
-                'amount': value[1],
-                'claimable': (expiration <= now)
-            })
-        })
-        setEscrowTransactions(transactions)
-    })
-}
+  //           transactions.push({
+  //               'index': index,
+  //               'expirationDate': expiration.toDateString(),
+  //               'expirationTime': expiration.toLocaleTimeString(),
+  //               'amount': value[1],
+  //               'claimable': (expiration <= now)
+  //           })
+  //       })
+  //       setEscrowTransactions(transactions)
+  //   })
+  // }
 
   const handleChange = setFunc => e => {
     setFunc(e.target.value)
   }
 
-  const claimFunds = (index) => () => {
-    escrowContract.methods
-        .Withdraw(account, index)
-        .send({from: account})
-        .then(() => getDeposits())
-  }  
+  // const claimFunds = (index) => () => {
+  //   escrowContract.methods
+  //       .Withdraw(account, index)
+  //       .send({from: account})
+  //       .then(() => getDeposits())
+  // }  
 
-  function sendETH(event) {
-    const weiAmount = web3.utils.toWei(ethAmount, 'ether');
+  function approveDAI() {
 
+    DAIContract.methods
+      .approve(escrowContract._address, parseInt(daiAmount))
+      .send({from: account})
+      .then(() => setApproved(true))
+      .catch(e => console.error(e));
+
+    // escrowContract.methods
+    //   .approveCollateralDeposit(parseInt(daiAmount))
+    //   .send({from: account})
+    //   .then(() => {
+    //     setApproved(true)
+    //   }).catch(error => {
+    //     console.log(error);
+    //   })
+
+
+    // event.preventDefault()
+  }
+
+  function sendDAI(event) {
+    // const weiAmount = web3.utils.toWei(ethAmount, 'ether');
+
+    // escrowContract.methods
+    //   .deposit(account, expirationDate)
+    //   .send({
+    //     from: account,
+    //     value: weiAmount
+    //   }).then(() => getDeposits())
     escrowContract.methods
-      .deposit(account, expirationDate)
-      .send({
-        from: account,
-        value: weiAmount
-      }).then(() => getDeposits())
+      .borrowerCollateralDeposit(expirationDate, parseInt(daiAmount))
+      .send({from: account})
 
     event.preventDefault()
   }
@@ -70,10 +95,10 @@ const Escrow = ({web3, account, escrowContract}) => {
   return (
     <div style={{display: 'flex', backgroundColor: '#282c34', justifyContent: 'center'}}>
       <Body>
-        <Form className="pt-4" onSubmit={sendETH} style={{display: 'flex', flexDirection: 'column'}}>
-            <Form.Label>Send ETH to escrow</Form.Label>
-            <Form.Control placeholder="ETH amount" value={ethAmount} onChange={handleChange(setEthAmount)} />
-            <Form.Text className="text-muted">Amount of ETH to store</Form.Text>
+        <Form className="pt-4" onSubmit={sendDAI} style={{display: 'flex', flexDirection: 'column'}}>
+            <Form.Label>Send DAI to escrow</Form.Label>
+            <Form.Control placeholder="DAI amount" value={daiAmount} onChange={handleChange(setDaiAmount)} />
+            <Form.Text className="text-muted">Amount of DAI to store</Form.Text>
             <Flatpickr className="mt-2"
             options={{ 
                 minDate: "2017-01-01",
@@ -88,10 +113,13 @@ const Escrow = ({web3, account, escrowContract}) => {
             }}
             />
             <Form.Text className="text-muted">Date and time when you can withdraw again</Form.Text>
-            <Button className="mt-2" variant="light" type="submit">Submit</Button>
+            {approved
+              ? <Button className="mt-2" variant="light" type="submit">Submit</Button>
+              : <Button className="mt-2" variant="light" onClick={approveDAI}>Approve</Button>
+            }
         </Form>
       </Body>
-      <Body>
+      {/* <Body>
         {escrowTransactions &&
           <div className="ml-4" style={{height: '70vh', overflow: 'hidden', overflowY: 'scroll'}}>
             {escrowTransactions.map((value, index) => (
@@ -115,7 +143,7 @@ const Escrow = ({web3, account, escrowContract}) => {
             ))}
             </div>
         }
-      </Body>
+      </Body> */}
     </div>
   );
 }

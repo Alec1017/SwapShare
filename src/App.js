@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Web3 from 'web3'
 
 import EscrowABI from './abis/Escrow.json'
+import TestnetDAI from './abis/TestnetDAI.json'
 
 import './App.css'
 import "flatpickr/dist/themes/material_green.css"
@@ -21,6 +22,7 @@ const App = () => {
   const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal()
 
   const [escrowContract, setEscrowContract] = useState(null)
+  const [DAIContract, setDAIContract] = useState(null)
 
   useEffect(() => {
     if (provider != null) {
@@ -41,6 +43,11 @@ const App = () => {
         EscrowABI.abi,
         EscrowABI.networks[networkID].address
       ))
+
+      setDAIContract(new web3.eth.Contract(
+        TestnetDAI.abi,
+        TestnetDAI.networks[networkID].address
+      ))
     }
   }, [web3])
 
@@ -52,7 +59,7 @@ const App = () => {
         <WalletButton provider={provider} loadWeb3Modal={loadWeb3Modal} logoutOfWeb3Modal={logoutOfWeb3Modal} />
       </Header>
       {web3 && escrowContract && account
-        ? <Escrow web3={web3} account={account} escrowContract={escrowContract} />
+        ? <Escrow web3={web3} account={account} escrowContract={escrowContract} DAIContract={DAIContract} />
         : <Body>
             <img src={logo} className="App-logo" alt="logo" />
             <div style={{fontSize: '2rem'}}>SwapShare</div>

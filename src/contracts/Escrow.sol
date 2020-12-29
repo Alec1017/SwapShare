@@ -9,11 +9,13 @@ contract Escrow {
     using SafeMath for uint256;
 
     struct BorrowTransaction {
+        uint256 index;
         uint256 expiration;
         uint256 amount;
     }
 
     struct LoanTransaction {
+        uint256 index;
         uint256 expiration;
         uint256 amount;
     }
@@ -45,11 +47,12 @@ contract Escrow {
         borrowerToTransactionIndex[msg.sender].push(borrowTransactionLength);
 
         borrowTransactions.push(
-            BorrowTransaction(expirationTimestamp, amount)
+            BorrowTransaction(borrowTransactionLength, expirationTimestamp, amount)
         );
     }
 
     function refundCollateralDeposit(address payable payee, uint transactionIndex) public {
+
 
     }
 

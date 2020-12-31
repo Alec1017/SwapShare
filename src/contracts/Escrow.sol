@@ -9,6 +9,7 @@ contract Escrow {
     using SafeMath for uint256;
 
     struct BorrowTransaction {
+        address borrower;
         uint256 index;
         uint256 expiration;
         uint256 daiAmount;
@@ -19,9 +20,11 @@ contract Escrow {
     }
 
     struct LoanTransaction {
+        address loaner;
         uint256 index;
         uint256 expiration;
-        uint256 amount;
+        uint256 ethAmount;
+        bool active;
     }
 
     IERC20 private _token;
@@ -50,6 +53,7 @@ contract Escrow {
 
         borrowTransactions.push(
             BorrowTransaction(
+                msg.sender,
                 borrowTransactionLength, 
                 expirationTimestamp, 
                 daiSupplied,
@@ -75,6 +79,7 @@ contract Escrow {
 
     }
 
+    // Retrieves all borrow requests for a single address
     function getAddressBorrowRequests() public view returns(BorrowTransaction[] memory) {
         uint borrowLength = borrowerToTransactionIndex[msg.sender].length;
         BorrowTransaction[] memory txs = new BorrowTransaction[](borrowLength);
@@ -88,6 +93,20 @@ contract Escrow {
         }
 
         return txs;
+    }
+
+    // Retrieves all borrow requests, except those made by the given address
+    function getAllBorrowRequests(address requestor) public view returns(BorrowTransaction[] memory) {
+        BorrowTransaction[] memory txs = new BorrowTransaction[](borrowTransactionLength);
+
+        for (uint i = 0; i < borrowTransactions.length; i++) {
+            if (borrowTransactions[i].valid && !borrowTransactions[i].fulfilled && borrowTransactions[i].borrower !=  requestor) {
+                txs[i] = borrowTransactions[i];
+            }
+        }
+
+        return txs;
+
     }
 
     // function borrowerCollateralDeposit(address payee, uint256 expirationTimestamp) public payable {}

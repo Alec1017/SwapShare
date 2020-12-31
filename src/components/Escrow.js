@@ -1,181 +1,105 @@
 import React, { useEffect, useState } from 'react'
 
-import Flatpickr from "react-flatpickr"
-import BigNumber from "bignumber.js"
 
-
-import "flatpickr/dist/themes/material_green.css";
 import { Body } from './index'
+import BorrowRequest from './BorrowRequest'
 
-import Form from 'react-bootstrap/Form'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 
 
 const Escrow = ({web3, account, escrowContract, DAIContract}) => {
-  const [daiAmount, setDaiAmount] = useState('')
-  const [expirationDate, setExpirationDate] = useState(null)
-
-  const [escrowTransactions, setEscrowTransactions] = useState(null)
-
-  const [approved, setApproved] = useState(false)
-  const approvalAmount = new BigNumber('1000e+18').toFixed()
+  const [borrowTransactions, setBorrowTransactions] = useState(null)
+  const [updateRequests, setUpdateRequests] = useState(true)
 
   useEffect(() => {
-    // getDeposits()
-  }, [])
-
-  // function getDeposits() {
-  //   escrowContract.methods
-  //   .getAllDeposits(account)
-  //   .call()
-  //   .then(result => {
-  //       let transactions = [];
-  //       result.map((value, index) => {
-  //           const now = new Date()
-  //           const expiration = new Date(parseInt(value[0]) * 1000)
-
-  //           transactions.push({
-  //               'index': index,
-  //               'expirationDate': expiration.toDateString(),
-  //               'expirationTime': expiration.toLocaleTimeString(),
-  //               'amount': value[1],
-  //               'claimable': (expiration <= now)
-  //           })
-  //       })
-  //       setEscrowTransactions(transactions)
-  //   })
-  // }
-
-  const handleChange = setFunc => e => {
-    setFunc(e.target.value)
-  }
-
-  // const claimFunds = (index) => () => {
-  //   escrowContract.methods
-  //       .Withdraw(account, index)
-  //       .send({from: account})
-  //       .then(() => getDeposits())
-  // }  
-
-  // function approveDAI() {
-
-  //   DAIContract.methods
-  //     .approve(escrowContract._address, parseInt(daiAmount))
-  //     .send({from: account})
-  //     .then(() => setApproved(true))
-  //     .catch(e => console.error(e));
-
-  //   // escrowContract.methods
-  //   //   .approveCollateralDeposit(parseInt(daiAmount))
-  //   //   .send({from: account})
-  //   //   .then(() => {
-  //   //     setApproved(true)
-  //   //   }).catch(error => {
-  //   //     console.log(error);
-  //   //   })
-
-
-  //   // event.preventDefault()
-  // }
-
-  // function sendDAI(event) {
-  //   // const weiAmount = web3.utils.toWei(ethAmount, 'ether');
-
-  //   // escrowContract.methods
-  //   //   .deposit(account, expirationDate)
-  //   //   .send({
-  //   //     from: account,
-  //   //     value: weiAmount
-  //   //   }).then(() => getDeposits())
-  //   escrowContract.methods
-  //     .borrowerCollateralDeposit(expirationDate, parseInt(daiAmount))
-  //     .send({from: account})
-
-  //   event.preventDefault()
-  // }
-
-  function approveDAI(event) {
-    let amountToSend = new BigNumber(`${daiAmount}e+18`).toString()
-
-    // DAIContract.methods
-    //   .approve(escrowContract._address, amountToSend)
-    //   .send({from: account})
-    //   .then(() => sendDAI(expirationDate, amountToSend))
-    //   .catch(e => console.error(e))
-
-    if (approved) {
-      sendDAI(expirationDate, amountToSend)
-    } else {
-      DAIContract.methods
-      .approve(escrowContract._address, approvalAmount)
-      .send({from: account})
-      .then(() => {
-        setApproved(true)
-        sendDAI(expirationDate, amountToSend)
-      })
-      .catch(e => console.error(e))
+    if (updateRequests) {
+      getBorrowTransactions()
+      setUpdateRequests(false)
     }
+  }, [updateRequests])
 
-    event.preventDefault()
-  }
+  useEffect(() => {
+    if (borrowTransactions && borrowTransactions.length == 0) {
+      setBorrowTransactions(null)
+    }
+  }, [borrowTransactions])
 
-  function sendDAI(expiration, amount) {
+  function getBorrowTransactions() {
     escrowContract.methods
-      .borrowerCollateralDeposit(expiration, amount)
-      .send({from: account})
+      .getAddressBorrowRequests()
+      .call()
+      .then(result => {
+        let transactions = [];
+        result.map(value => {
+          if (value['valid']) {
+            const expiration = new Date(parseInt(value['expiration']) * 1000)
+            console.log(value)
+            transactions.push({
+                'index': value['index'],
+                'expirationDate': expiration.toDateString(),
+                'expirationTime': expiration.toLocaleTimeString(),
+                'daiAmount': web3.utils.fromWei(value['daiAmount'], 'ether'),
+                'ethRequested': web3.utils.fromWei(value['ethRequested'], 'ether'),
+                'interestRate': value['interestRate'],
+                'fulfilled': value['fulfilled']
+            })
+          }
+        })
+        setBorrowTransactions(transactions)
+      })
   }
+
+
+  const cancelBorrowRequest = (index) => () => {
+    escrowContract.methods
+        .refundCollateralDeposit(index)
+        .send({from: account})
+        .then(() => getBorrowTransactions())
+  }  
+
 
   return (
     <div style={{display: 'flex', backgroundColor: '#282c34', justifyContent: 'center'}}>
       <Body>
-        <Form className="pt-4" onSubmit={approveDAI} style={{display: 'flex', flexDirection: 'column'}}>
-            <Form.Label>Send DAI to escrow</Form.Label>
-            <Form.Control placeholder="DAI amount" value={daiAmount} onChange={handleChange(setDaiAmount)} />
-            <Form.Text className="text-muted">Amount of DAI to store</Form.Text>
-            <Flatpickr className="mt-2"
-            options={{ 
-                minDate: "2017-01-01",
-                enableTime: true,
-                dateFormat: "M d, Y  h:i K",
-                defaultDate: "today",
-                minDate: "today" 
-            }}
-            onChange={date => {
-                let utcTimestamp = date[0].getTime() / 1000
-                setExpirationDate(utcTimestamp)
-            }}
-            />
-            <Form.Text className="text-muted">Date and time when you can withdraw again</Form.Text>
-            <Button className="mt-2" variant="light" onClick={approveDAI}>Submit</Button>
-           
-        </Form>
+        <BorrowRequest 
+          account={account} 
+          escrowContract={escrowContract} 
+          daiContract={DAIContract} 
+          setUpdateRequests={setUpdateRequests} 
+        />
       </Body>
-      {/* <Body>
-        {escrowTransactions &&
-          <div className="ml-4" style={{height: '70vh', overflow: 'hidden', overflowY: 'scroll'}}>
-            {escrowTransactions.map((value, index) => (
-                <Card className="mb-3" style={{color: '#282c34'}} key={index}>
-                    <Card.Header>{web3.utils.fromWei(value.amount, 'ether')} ETH</Card.Header>
+      <Body>
+        {borrowTransactions &&
+          <div className="ml-4">
+            <div className="mb-2">Borrow Requests</div>
+            {borrowTransactions.map((value, index) => (
+                <Card className="mb-3" style={{color: '#282c34', minWidth: '25rem'}} key={index}>
+                    <Card.Header>{value.ethRequested} ETH requested</Card.Header>
                     <Card.Body>
-                        <Card.Title>Funds will be locked in escrow until:</Card.Title>
+                        <Card.Title>Posted collateral: {value.daiAmount} DAI</Card.Title>
+                        <Card.Text>Offered interest rate: {value.interestRate}%</Card.Text>
+                        <Card.Text>Total to be paid back: {
+                          (Number(value.ethRequested) * (Number(value.interestRate) / 100)) + Number(value.ethRequested)
+                        } ETH</Card.Text>
+                        <Card.Text>Loan will be paid in full by:</Card.Text>
                         <Card.Text>
                             Date: {value.expirationDate}<br />
                             Time: {value.expirationTime}
                         </Card.Text>
                         <Button 
-                            variant={value.claimable ? 'primary' : 'secondary'} 
-                            disabled={!value.claimable}
-                            onClick={claimFunds(value.index)}
+                            variant={value.fulfilled ? 'success' : 'danger'} 
+                            disabled={value.fulfilled}
+                            onClick={cancelBorrowRequest(value.index)}
                         >
-                            {value.claimable ? 'Claim ETH' : 'not claimable'}
+                            {value.fulfilled ? 'active' : 'cancel request'}
                         </Button>
                     </Card.Body>
                 </Card>
             ))}
             </div>
         }
-      </Body> */}
+      </Body>
     </div>
   );
 }

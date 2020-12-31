@@ -5,7 +5,6 @@ import EscrowABI from './abis/Escrow.json'
 import TestnetDAI from './abis/TestnetDAI.json'
 
 import './App.css'
-import "flatpickr/dist/themes/material_green.css"
 import logo from './logo.svg'
 
 import { Header, Body } from './components'

@@ -11,7 +11,11 @@ contract Escrow {
     struct BorrowTransaction {
         uint256 index;
         uint256 expiration;
-        uint256 amount;
+        uint256 daiAmount;
+        uint256 ethRequested;
+        uint interestRate;
+        bool fulfilled;
+        bool valid;
     }
 
     struct LoanTransaction {
@@ -38,22 +42,52 @@ contract Escrow {
     }
 
 
-    function borrowerCollateralDeposit(uint256 expirationTimestamp, uint amount) public {
-        _token.transferFrom(msg.sender, address(this), amount);
+    function borrowerCollateralDeposit(uint256 expirationTimestamp, uint256 daiSupplied, uint256 ethRequested, uint interestRate) public {
+        _token.transferFrom(msg.sender, address(this), daiSupplied);
 
-        // There is a new borrow transaction so we increment
-        // Then add the new index to the address's array of transactions
-        borrowTransactionLength++;
+        // Add the new index to the address's array of transactions
         borrowerToTransactionIndex[msg.sender].push(borrowTransactionLength);
 
         borrowTransactions.push(
-            BorrowTransaction(borrowTransactionLength, expirationTimestamp, amount)
+            BorrowTransaction(
+                borrowTransactionLength, 
+                expirationTimestamp, 
+                daiSupplied,
+                ethRequested,
+                interestRate,
+                false,
+                true
+            )
         );
+
+        borrowTransactionLength++;
     }
 
-    function refundCollateralDeposit(address payable payee, uint transactionIndex) public {
+    function refundCollateralDeposit(uint transactionIndex) public {
+        uint bTransactionIndex = borrowerToTransactionIndex[msg.sender][transactionIndex];
 
+        // Make sure we can withdraw
+        require(borrowTransactions[bTransactionIndex].fulfilled == false);
 
+        // Send tokens and zero-out the transaction
+        _token.transfer(msg.sender, borrowTransactions[bTransactionIndex].daiAmount);
+        borrowTransactions[bTransactionIndex].valid = false;
+
+    }
+
+    function getAddressBorrowRequests() public view returns(BorrowTransaction[] memory) {
+        uint borrowLength = borrowerToTransactionIndex[msg.sender].length;
+        BorrowTransaction[] memory txs = new BorrowTransaction[](borrowLength);
+
+        for (uint i = 0; i < borrowerToTransactionIndex[msg.sender].length; i++) {
+            uint borrowIndex = borrowerToTransactionIndex[msg.sender][i];
+
+            if (borrowTransactions[borrowIndex].valid) {
+                txs[i] = borrowTransactions[borrowIndex];
+            }
+        }
+
+        return txs;
     }
 
     // function borrowerCollateralDeposit(address payee, uint256 expirationTimestamp) public payable {}

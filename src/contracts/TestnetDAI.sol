@@ -12,7 +12,9 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 contract TestnetDAI is ERC20 {
     uint public initialSupply = 1000;
 
-    constructor() public ERC20("TestnetDAI", "DAI") {
-        _mint(msg.sender, initialSupply * 10 ** uint(decimals()));
+    constructor() public ERC20("TestnetDAI", "DAI") {}
+
+    function mint(address recipient) public {
+        _mint(recipient, initialSupply * 10 ** uint(decimals()));
     }
 }

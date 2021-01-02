@@ -7,9 +7,28 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Escrow {
     using SafeMath for uint256;
+    
+    enum LoanState { REQUESTED, FULFILLED, SETTLED, DEFAULTED }
+
+    struct Loan {
+        address payable borrower;
+        address payable lender;
+
+        uint256 index;
+        uint256 expiration;
+        uint256 daiAmount;
+        uint256 ethAmount;
+        uint256 ethPlusInterest;
+
+        uint interestRate;
+
+        LoanState state;
+    }
 
     struct BorrowTransaction {
-        address borrower;
+        address payable borrower;
+        address payable fulfilledBy; 
+
         uint256 index;
         uint256 expiration;
         uint256 daiAmount;
@@ -29,17 +48,24 @@ contract Escrow {
 
     IERC20 private _token;
 
+    mapping(address => uint[]) public addressLoansIndex;
+
     mapping(address => uint[]) public borrowerToTransactionIndex;
     mapping(address => uint[]) public loanerToTransactionIndex;
 
+    Loan[] public loans;
+ 
     BorrowTransaction[] public borrowTransactions;
     LoanTransaction[] public loanTransactions;
+
+    uint loanLength;
 
     uint borrowTransactionLength;
     uint loanTransactionLength;
 
     constructor (address token) public {
         _token = IERC20(token);
+        loanLength = 0;
         borrowTransactionLength = 0;
         loanTransactionLength = 0;
     }
@@ -54,6 +80,7 @@ contract Escrow {
         borrowTransactions.push(
             BorrowTransaction(
                 msg.sender,
+                address(0),
                 borrowTransactionLength, 
                 expirationTimestamp, 
                 daiSupplied,
@@ -80,12 +107,12 @@ contract Escrow {
     }
 
     // Retrieves all borrow requests for a single address
-    function getAddressBorrowRequests() public view returns(BorrowTransaction[] memory) {
-        uint borrowLength = borrowerToTransactionIndex[msg.sender].length;
+    function getAddressBorrowRequests(address borrower) public view returns(BorrowTransaction[] memory) {
+        uint borrowLength = borrowerToTransactionIndex[borrower].length;
         BorrowTransaction[] memory txs = new BorrowTransaction[](borrowLength);
 
-        for (uint i = 0; i < borrowerToTransactionIndex[msg.sender].length; i++) {
-            uint borrowIndex = borrowerToTransactionIndex[msg.sender][i];
+        for (uint i = 0; i < borrowLength; i++) {
+            uint borrowIndex = borrowerToTransactionIndex[borrower][i];
 
             if (borrowTransactions[borrowIndex].valid) {
                 txs[i] = borrowTransactions[borrowIndex];
@@ -100,12 +127,64 @@ contract Escrow {
         BorrowTransaction[] memory txs = new BorrowTransaction[](borrowTransactionLength);
 
         for (uint i = 0; i < borrowTransactions.length; i++) {
-            if (borrowTransactions[i].valid && !borrowTransactions[i].fulfilled && borrowTransactions[i].borrower !=  requestor) {
+            if (borrowTransactions[i].valid && !borrowTransactions[i].fulfilled && borrowTransactions[i].borrower != requestor) {
                 txs[i] = borrowTransactions[i];
             }
         }
 
         return txs;
+    }
+
+    function fulfillLoan(uint borrowIndex) public payable {
+        // Update the borrow transaction
+        borrowTransactions[borrowIndex].fulfilled = true;
+        borrowTransactions[borrowIndex].fulfilledBy = msg.sender;
+
+        // Disperse the ETH funds to the borrower
+        borrowTransactions[borrowIndex].borrower.transfer(msg.value);
+
+        // Create a new loan transaction
+         // Add the new index to the address's array of transactions
+        loanerToTransactionIndex[msg.sender].push(loanTransactionLength);
+
+        loanTransactions.push(
+            LoanTransaction(
+                msg.sender,
+                loanTransactionLength, 
+                borrowTransactions[borrowIndex].expiration,
+                msg.value,
+                true
+            )
+        );
+
+        loanTransactionLength++;
+    }
+
+    function getAddressFulfilledLoans(address loaner) public view returns(LoanTransaction[] memory) {
+        uint loanLength = loanerToTransactionIndex[loaner].length;
+        LoanTransaction[] memory txs = new LoanTransaction[](loanLength);
+
+        for (uint i = 0; i < loanLength; i++) {
+            uint loanIndex = loanerToTransactionIndex[loaner][i];
+
+            if (loanTransactions[loanIndex].active) {
+                txs[i] = loanTransactions[loanIndex];
+            }
+        }
+
+        return txs;
+    }
+
+    function repayLoan(uint borrowIndex) public payable {
+
+        require(borrowTransactions[borrowIndex].expiration <= block.timestamp);
+
+        // Return DAI to borrower
+        _token.transfer(
+            borrowTransactions[borrowIndex].borrower, 
+            borrowTransactions[borrowIndex].daiAmount
+        );
+        borrowTransactions[borrowIndex].valid = false;
 
     }
 

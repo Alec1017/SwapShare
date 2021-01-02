@@ -7,7 +7,7 @@ import TestnetDAI from './abis/TestnetDAI.json'
 import './App.css'
 import logo from './logo.svg'
 
-import { Header, Body } from './components'
+import { Header, Splash } from './components'
 import WalletButton from './components/WalletButton'
 import Escrow from './components/Escrow'
 
@@ -59,11 +59,11 @@ const App = () => {
       </Header>
       {web3 && escrowContract && account
         ? <Escrow web3={web3} account={account} escrowContract={escrowContract} DAIContract={DAIContract} />
-        : <Body>
+        : <Splash>
             <img src={logo} className="App-logo" alt="logo" />
             <div style={{fontSize: '2rem'}}>SwapShare</div>
-            <div>A direct peer-to-peer crypto lending service</div>
-          </Body>
+            <div>An anonymous, direct peer-to-peer crypto lending service</div>
+          </Splash>
       }
     </div>
   );

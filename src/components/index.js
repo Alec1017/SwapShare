@@ -10,6 +10,17 @@ export const Header = styled.header`
   color: white;
 `;
 
+export const Splash = styled.div`
+  align-items: center;
+  background-color: #282c34;
+  color: white;
+  min-height: 90vh;
+  font-size: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  padding-top: 7rem;
+`;
+
 export const Body = styled.div`
   align-items: center;
   background-color: #282c34;
@@ -19,6 +30,7 @@ export const Body = styled.div`
   display: flex;
   flex-direction: column;
   padding-top: 7rem;
+  width: 32%;
 `;
 
 export const Image = styled.img`

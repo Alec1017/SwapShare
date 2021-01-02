@@ -58,7 +58,7 @@ const BorrowRequest = ({ account, escrowContract, daiContract, setUpdateRequests
     }
 
     return (
-        <Form className="pt-4" noValidate validated={validated} onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column'}}>
+        <Form noValidate validated={validated} onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column'}}>
             <Form.Label>Create a Borrow Request</Form.Label>
 
             <Form.Group>

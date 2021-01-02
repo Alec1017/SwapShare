@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 
-
 import { Body } from './index'
 import BorrowRequest from './BorrowRequest'
+import { LOAN_STATE } from '../Constants'
 
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
@@ -16,8 +16,8 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
 
   useEffect(() => {
     if (updateRequests) {
-      getBorrowTransactions()
-      getAllBorrowRequests()
+      getAddressBorrows()
+      getAllRequests()
       setUpdateRequests(false)
     }
   }, [updateRequests])
@@ -34,23 +34,25 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
     }
   }, [allRequests])
 
-  function getAllBorrowRequests() {
+  function getAllRequests() {
     swapShareContract.methods
-      .getAllBorrowRequests(account)
+      .getAllRequests(account)
       .call()
       .then(result => {
         let transactions = [];
         result.map(value => {
           if (value['valid']) {
             const expiration = new Date(parseInt(value['expiration']) * 1000)
+            
             transactions.push({
-                'index': value['index'],
-                'expirationDate': expiration.toDateString(),
-                'expirationTime': expiration.toLocaleTimeString(),
-                'daiAmount': web3.utils.fromWei(value['daiAmount'], 'ether'),
-                'ethRequested': web3.utils.fromWei(value['ethRequested'], 'ether'),
-                'interestRate': value['interestRate'],
-                'fulfilled': value['fulfilled']
+              'index': value['index'],
+              'expirationDate': expiration.toDateString(),
+              'expirationTime': expiration.toLocaleTimeString(),
+              'daiAmount': web3.utils.fromWei(value['daiAmount'], 'ether'),
+              'ethAmount': web3.utils.fromWei(value['ethAmount'], 'ether'),
+              'ethPlusInterest': web3.utils.fromWei(value['ethPlusInterest'], 'ether'),
+              'interestRate': value['interestRate'],
+              'state': value['state']
             })
           }
         })
@@ -58,23 +60,25 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
       })
   }
 
-  function getBorrowTransactions() {
+  function getAddressBorrows() {
     swapShareContract.methods
-      .getAddressBorrowRequests(account)
+      .getAddressBorrows(account)
       .call()
       .then(result => {
         let transactions = [];
         result.map(value => {
           if (value['valid']) {
             const expiration = new Date(parseInt(value['expiration']) * 1000)
+
             transactions.push({
-                'index': value['index'],
-                'expirationDate': expiration.toDateString(),
-                'expirationTime': expiration.toLocaleTimeString(),
-                'daiAmount': web3.utils.fromWei(value['daiAmount'], 'ether'),
-                'ethRequested': web3.utils.fromWei(value['ethRequested'], 'ether'),
-                'interestRate': value['interestRate'],
-                'fulfilled': value['fulfilled']
+              'index': value['index'],
+              'expirationDate': expiration.toDateString(),
+              'expirationTime': expiration.toLocaleTimeString(),
+              'daiAmount': web3.utils.fromWei(value['daiAmount'], 'ether'),
+              'ethAmount': web3.utils.fromWei(value['ethAmount'], 'ether'),
+              'ethPlusInterest': web3.utils.fromWei(value['ethPlusInterest'], 'ether'),
+              'interestRate': value['interestRate'],
+              'state': value['state']
             })
           }
         })
@@ -85,9 +89,9 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
 
   const cancelBorrowRequest = (index) => () => {
     swapShareContract.methods
-        .refundCollateralDeposit(index)
+        .cancelRequestedLoan(index)
         .send({from: account})
-        .then(() => getBorrowTransactions())
+        .then(() => getAddressBorrows())
   }  
 
   const fulfillLoan = (index, amount) => () => {
@@ -99,7 +103,7 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
         from: account,
         value: ethAmount
       })
-      .then(() => getAllBorrowRequests())
+      .then(() => getAllRequests())
   }
 
   return (
@@ -110,19 +114,17 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
             <div className="mb-4">Open Loan Requests</div>
             {allRequests.map((value, index) => (
                 <Card className="mb-3" style={{color: '#282c34', minWidth: '20rem'}} key={index}>
-                    <Card.Header>{value.ethRequested} ETH requested</Card.Header>
+                    <Card.Header>{value.ethAmount} ETH requested</Card.Header>
                     <Card.Body>
                         <Card.Title>Posted collateral: {value.daiAmount} DAI</Card.Title>
                         <Card.Text>Offered interest rate: {value.interestRate}%</Card.Text>
-                        <Card.Text>Total to be paid back: {
-                          (Number(value.ethRequested) * (Number(value.interestRate) / 100)) + Number(value.ethRequested)
-                        } ETH</Card.Text>
+                        <Card.Text>Total to be paid back: {value.ethPlusInterest} ETH</Card.Text>
                         <Card.Text>Loan will be paid in full by:</Card.Text>
                         <Card.Text>
                             Date: {value.expirationDate}<br />
                             Time: {value.expirationTime}
                         </Card.Text>
-                        <Button variant='success' onClick={fulfillLoan(value.index, value.ethRequested)}>
+                        <Button variant='success' onClick={fulfillLoan(value.index, value.ethAmount)}>
                           fulfill loan
                         </Button>
                     </Card.Body>
@@ -145,13 +147,11 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
             <div className="mb-4">Borrow Requests</div>
             {borrowTransactions.map((value, index) => (
                 <Card className="mb-3" style={{color: '#282c34', minWidth: '20rem'}} key={index}>
-                    <Card.Header>{value.ethRequested} ETH requested</Card.Header>
+                    <Card.Header>{value.ethAmount} ETH requested</Card.Header>
                     <Card.Body>
                         <Card.Title>Posted collateral: {value.daiAmount} DAI</Card.Title>
                         <Card.Text>Offered interest rate: {value.interestRate}%</Card.Text>
-                        <Card.Text>Total to be paid back: {
-                          (Number(value.ethRequested) * (Number(value.interestRate) / 100)) + Number(value.ethRequested)
-                        } ETH</Card.Text>
+                        <Card.Text>Total to be paid back: {value.ethPlusInterest} ETH</Card.Text>
                         <Card.Text>Loan will be paid in full by:</Card.Text>
                         <Card.Text>
                             Date: {value.expirationDate}<br />
@@ -159,13 +159,13 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
                         </Card.Text>
                         <div>
                           <Button 
-                              variant={value.fulfilled ? 'success' : 'danger'} 
-                              disabled={value.fulfilled}
+                              variant={value.state == LOAN_STATE.requested ? 'danger' : 'success'} 
+                              disabled={value.state == LOAN_STATE.fulfilled}
                               onClick={cancelBorrowRequest(value.index)}
                           >
-                            {value.fulfilled ? 'active' : 'cancel request'}
+                            {value.state == LOAN_STATE.requested ? 'cancel request' : 'active'}
                           </Button>
-                          <Button className="ml-2" variant="primary">Pay back loan</Button>
+                          {/* <Button className="ml-2" variant="primary">Pay back loan</Button> */}
                         </div>
                     </Card.Body>
                 </Card>

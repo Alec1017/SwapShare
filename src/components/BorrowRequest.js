@@ -52,7 +52,7 @@ const BorrowRequest = ({ account, swapShareContract, daiContract, setUpdateReque
 
     function sendDAI(expiration, amount, ethRequested, interestRate) {
         swapShareContract.methods
-            .borrowerCollateralDeposit(expiration, amount, ethRequested, interestRate)
+            .requestLoan(expiration, amount, ethRequested, interestRate)
             .send({from: account})
             .then(() => setUpdateRequests(true))
     }

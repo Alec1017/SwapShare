@@ -38,6 +38,8 @@ contract SwapShare {
         uint interestRate;
 
         LoanState state;
+
+        bool valid;
     }
 
     IERC20 private _token;
@@ -74,7 +76,8 @@ contract SwapShare {
                 ethAmount,
                 ethAmount.add(ethAmount.mul(interestRate).div(100)),
                 interestRate,
-                LoanState.REQUESTED
+                LoanState.REQUESTED,
+                true
             )
         );
 
@@ -97,7 +100,7 @@ contract SwapShare {
     }
 
 
-    // Get all loans for a borrower in the requested or fulfilled state
+    // Get all loans that were created by the given borrower
     function getAddressBorrows(address walletAddr) public view returns(Loan[] memory) {
         uint numLoans = _addressBorrowIndex[walletAddr].length;
         Loan[] memory requests = new Loan[](numLoans);
@@ -105,7 +108,7 @@ contract SwapShare {
         for (uint i = 0; i < numLoans; i++) {
             uint loanIndex = _addressBorrowIndex[walletAddr][i];
 
-            if (_loans[loanIndex].state == LoanState.REQUESTED && _loans[loanIndex].state == LoanState.FULFILLED) {
+            if (_loans[loanIndex].state == LoanState.REQUESTED || _loans[loanIndex].state == LoanState.FULFILLED) {
                 requests[i] = _loans[loanIndex];
             }
         }

@@ -8,7 +8,22 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract Escrow {
     using SafeMath for uint256;
     
-    enum LoanState { REQUESTED, FULFILLED, SETTLED, DEFAULTED }
+    enum LoanState { 
+        // Borrower has requested a loan
+        REQUESTED, 
+        
+        // Borrower requested a loan and then canceled it
+        CANCELED, 
+        
+        // A loan was requested and a lender fulfilled the loan
+        FULFILLED, 
+        
+        // A loan was requested, fulfilled, and the borrower repaid the lender 
+        SETTLED, 
+        
+        // A loan was requested, fulfilled, and the borrower failed to repay before expiration
+        DEFAULTED 
+    }
 
     struct Loan {
         address payable borrower;
@@ -58,53 +73,92 @@ contract Escrow {
     BorrowTransaction[] public borrowTransactions;
     LoanTransaction[] public loanTransactions;
 
-    uint loanLength;
+    uint loansLength;
 
     uint borrowTransactionLength;
     uint loanTransactionLength;
 
     constructor (address token) public {
         _token = IERC20(token);
-        loanLength = 0;
+        loansLength = 0;
         borrowTransactionLength = 0;
         loanTransactionLength = 0;
     }
 
+    function borrowerCollateralDeposit(uint256 expirationTimestamp, uint256 daiAmount, uint256 ethAmount, uint interestRate) public {
+        // Transfer DAI tokens to this contract
+        _token.transferFrom(msg.sender, address(this), daiAmount);
 
-    function borrowerCollateralDeposit(uint256 expirationTimestamp, uint256 daiSupplied, uint256 ethRequested, uint interestRate) public {
-        _token.transferFrom(msg.sender, address(this), daiSupplied);
+        // Add the new index to the address's array of loans
+        addressLoansIndex[msg.sender].push(loansLength);
 
-        // Add the new index to the address's array of transactions
-        borrowerToTransactionIndex[msg.sender].push(borrowTransactionLength);
-
-        borrowTransactions.push(
-            BorrowTransaction(
+        // Create new loan transaction and add it to all loans
+        loans.push(
+            Loan(
                 msg.sender,
                 address(0),
-                borrowTransactionLength, 
+                loansLength, 
                 expirationTimestamp, 
-                daiSupplied,
-                ethRequested,
+                daiAmount,
+                ethAmount,
+                ethAmount.add(ethAmount.mul(interestRate).div(100)),
                 interestRate,
-                false,
-                true
+                LoanState.REQUESTED
             )
         );
 
-        borrowTransactionLength++;
+        loansLength++;
     }
 
-    function refundCollateralDeposit(uint transactionIndex) public {
-        uint bTransactionIndex = borrowerToTransactionIndex[msg.sender][transactionIndex];
+    function refundCollateralDeposit(uint loanIndex) public {
+        // Ensure loan is in a REQUESTED state
+        require(loans[loanIndex].state == LoanState.REQUESTED);
 
-        // Make sure we can withdraw
-        require(borrowTransactions[bTransactionIndex].fulfilled == false);
+        // Ensure loan belongs to msg.sender
+        require(loans[loanIndex].borrower == msg.sender);
 
-        // Send tokens and zero-out the transaction
-        _token.transfer(msg.sender, borrowTransactions[bTransactionIndex].daiAmount);
-        borrowTransactions[bTransactionIndex].valid = false;
-
+        // Refund collateral DAI tokens
+        // Then, cancel the loan
+        _token.transfer(msg.sender, loans[loanIndex].daiAmount);
+        loans[loanIndex].state = LoanState.CANCELED;
     }
+
+
+
+    // function borrowerCollateralDeposit(uint256 expirationTimestamp, uint256 daiSupplied, uint256 ethRequested, uint interestRate) public {
+    //     _token.transferFrom(msg.sender, address(this), daiSupplied);
+
+    //     // Add the new index to the address's array of transactions
+    //     borrowerToTransactionIndex[msg.sender].push(borrowTransactionLength);
+
+    //     borrowTransactions.push(
+    //         BorrowTransaction(
+    //             msg.sender,
+    //             address(0),
+    //             borrowTransactionLength, 
+    //             expirationTimestamp, 
+    //             daiSupplied,
+    //             ethRequested,
+    //             interestRate,
+    //             false,
+    //             true
+    //         )
+    //     );
+
+    //     borrowTransactionLength++;
+    // }
+
+    // function refundCollateralDeposit(uint transactionIndex) public {
+    //     uint bTransactionIndex = borrowerToTransactionIndex[msg.sender][transactionIndex];
+
+    //     // Make sure we can withdraw
+    //     require(borrowTransactions[bTransactionIndex].fulfilled == false);
+
+    //     // Send tokens and zero-out the transaction
+    //     _token.transfer(msg.sender, borrowTransactions[bTransactionIndex].daiAmount);
+    //     borrowTransactions[bTransactionIndex].valid = false;
+
+    // }
 
     // Retrieves all borrow requests for a single address
     function getAddressBorrowRequests(address borrower) public view returns(BorrowTransaction[] memory) {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Web3 from 'web3'
 
-import EscrowABI from './abis/Escrow.json'
+import SwapShareABI from './abis/SwapShare.json'
 import TestnetDAI from './abis/TestnetDAI.json'
 
 import './App.css'
@@ -9,7 +9,7 @@ import logo from './logo.svg'
 
 import { Header, Splash } from './components'
 import WalletButton from './components/WalletButton'
-import Escrow from './components/Escrow'
+import SwapShare from './components/SwapShare'
 
 import useWeb3Modal from './hooks/useWeb3Modal'
 
@@ -20,7 +20,7 @@ const App = () => {
   const [account, setAccount] = useState(null)
   const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal()
 
-  const [escrowContract, setEscrowContract] = useState(null)
+  const [swapShareContract, setSwapShareContract] = useState(null)
   const [DAIContract, setDAIContract] = useState(null)
 
   useEffect(() => {
@@ -38,9 +38,9 @@ const App = () => {
 
   useEffect(() => {
     if (web3 != null) {
-      setEscrowContract(new web3.eth.Contract(
-        EscrowABI.abi,
-        EscrowABI.networks[networkID].address
+      setSwapShareContract(new web3.eth.Contract(
+        SwapShareABI.abi,
+        SwapShareABI.networks[networkID].address
       ))
 
       setDAIContract(new web3.eth.Contract(
@@ -57,8 +57,8 @@ const App = () => {
         <div className="mr-2">{account}</div>
         <WalletButton provider={provider} loadWeb3Modal={loadWeb3Modal} logoutOfWeb3Modal={logoutOfWeb3Modal} />
       </Header>
-      {web3 && escrowContract && account
-        ? <Escrow web3={web3} account={account} escrowContract={escrowContract} DAIContract={DAIContract} />
+      {web3 && swapShareContract && account
+        ? <SwapShare web3={web3} account={account} swapShareContract={swapShareContract} DAIContract={DAIContract} />
         : <Splash>
             <img src={logo} className="App-logo" alt="logo" />
             <div style={{fontSize: '2rem'}}>SwapShare</div>

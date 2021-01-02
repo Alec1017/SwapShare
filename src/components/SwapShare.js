@@ -8,7 +8,7 @@ import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 
 
-const Escrow = ({web3, account, escrowContract, DAIContract}) => {
+const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
   const [fulfilledLoans, setFulfilledLoans] = useState(null)
   const [allRequests, setAllRequests] = useState(null)
   const [borrowTransactions, setBorrowTransactions] = useState(null)
@@ -35,7 +35,7 @@ const Escrow = ({web3, account, escrowContract, DAIContract}) => {
   }, [allRequests])
 
   function getAllBorrowRequests() {
-    escrowContract.methods
+    swapShareContract.methods
       .getAllBorrowRequests(account)
       .call()
       .then(result => {
@@ -59,7 +59,7 @@ const Escrow = ({web3, account, escrowContract, DAIContract}) => {
   }
 
   function getBorrowTransactions() {
-    escrowContract.methods
+    swapShareContract.methods
       .getAddressBorrowRequests(account)
       .call()
       .then(result => {
@@ -84,7 +84,7 @@ const Escrow = ({web3, account, escrowContract, DAIContract}) => {
 
 
   const cancelBorrowRequest = (index) => () => {
-    escrowContract.methods
+    swapShareContract.methods
         .refundCollateralDeposit(index)
         .send({from: account})
         .then(() => getBorrowTransactions())
@@ -93,7 +93,7 @@ const Escrow = ({web3, account, escrowContract, DAIContract}) => {
   const fulfillLoan = (index, amount) => () => {
     const ethAmount = web3.utils.toWei(amount, 'ether').toString()
 
-    escrowContract.methods
+    swapShareContract.methods
       .fulfillLoan(index)
       .send({
         from: account,
@@ -134,7 +134,7 @@ const Escrow = ({web3, account, escrowContract, DAIContract}) => {
       <Body>
         <BorrowRequest 
           account={account} 
-          escrowContract={escrowContract} 
+          swapShareContract={swapShareContract} 
           daiContract={DAIContract} 
           setUpdateRequests={setUpdateRequests} 
         />
@@ -177,4 +177,4 @@ const Escrow = ({web3, account, escrowContract, DAIContract}) => {
   );
 }
 
-export default Escrow
+export default SwapShare

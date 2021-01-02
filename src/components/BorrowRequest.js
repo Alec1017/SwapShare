@@ -5,7 +5,7 @@ import BigNumber from "bignumber.js"
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 
-const BorrowRequest = ({ account, escrowContract, daiContract, setUpdateRequests }) => {
+const BorrowRequest = ({ account, swapShareContract, daiContract, setUpdateRequests }) => {
     const [validated, setValidated] = useState(false)
     const [approved, setApproved] = useState(false)
     const approvalAmount = new BigNumber('1000e+18').toFixed()
@@ -40,7 +40,7 @@ const BorrowRequest = ({ account, escrowContract, daiContract, setUpdateRequests
             sendDAI(expirationDate, amountToSend, ethRequested, interestRate)
         } else {
             daiContract.methods
-            .approve(escrowContract._address, approvalAmount)
+            .approve(swapShareContract._address, approvalAmount)
             .send({from: account})
             .then(() => {
                 setApproved(true)
@@ -51,7 +51,7 @@ const BorrowRequest = ({ account, escrowContract, daiContract, setUpdateRequests
     }
 
     function sendDAI(expiration, amount, ethRequested, interestRate) {
-        escrowContract.methods
+        swapShareContract.methods
             .borrowerCollateralDeposit(expiration, amount, ethRequested, interestRate)
             .send({from: account})
             .then(() => setUpdateRequests(true))

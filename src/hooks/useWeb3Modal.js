@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
@@ -9,21 +9,25 @@ const INFURA_ID = "INVALID_INFURA_KEY";
 const NETWORK_NAME = "mainnet";
 
 function useWeb3Modal(config = {}) {
+  const [web3Modal, setWeb3Modal] = useState();
   const [provider, setProvider] = useState();
   const { infuraId = INFURA_ID, NETWORK = NETWORK_NAME } = config;
 
-  const web3Modal = new Web3Modal({
-    network: NETWORK,
-    cacheProvider: true,
-    providerOptions: {
-      walletconnect: {
-        package: WalletConnectProvider,
-        options: {
-          infuraId,
+  useEffect(() => {
+    const modal = new Web3Modal({
+      network: NETWORK,
+      cacheProvider: true,
+      providerOptions: {
+        walletconnect: {
+          package: WalletConnectProvider,
+          options: {
+            infuraId,
+          },
         },
       },
-    },
-  })
+    })
+    setWeb3Modal(modal)
+  }, [])
 
   // Open wallet selection modal.
   const loadWeb3Modal = async () => {

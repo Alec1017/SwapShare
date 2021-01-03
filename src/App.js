@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import Web3 from 'web3'
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from 'react-router-dom'
 
 import SwapShareABI from './abis/SwapShare.json'
 import TestnetDAI from './abis/TestnetDAI.json'
@@ -52,21 +58,41 @@ const App = () => {
 
 
   return (
-    <div className="App">
-      <Header>
-        <div className="mr-2">{account}</div>
-        <WalletButton provider={provider} loadWeb3Modal={loadWeb3Modal} logoutOfWeb3Modal={logoutOfWeb3Modal} />
-      </Header>
-      {web3 && swapShareContract && account
-        ? <SwapShare web3={web3} account={account} swapShareContract={swapShareContract} DAIContract={DAIContract} />
-        : <Splash>
-            <img src={logo} className="App-logo" alt="logo" />
-            <div style={{fontSize: '2rem'}}>SwapShare</div>
-            <div>An anonymous, direct peer-to-peer crypto lending service</div>
-          </Splash>
-      }
-    </div>
+    <Router>
+      <div className="App">
+        <Header>
+          {web3 && swapShareContract && account &&
+            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+              <div style={{minWidth: '5rem'}}>
+                <Link to='/'>home</Link>
+              </div>
+              <div style={{minWidth: '5rem'}}>
+                <Link to='/2'>another link</Link>
+              </div>
+            </div> 
+          }
+
+          <div>
+            <div className="mr-2">{account}</div>
+            <WalletButton provider={provider} loadWeb3Modal={loadWeb3Modal} logoutOfWeb3Modal={logoutOfWeb3Modal} />
+          </div>
+        </Header>
+        <Route path='/'>
+          {web3 && swapShareContract && account
+            ? <SwapShare web3={web3} account={account} swapShareContract={swapShareContract} DAIContract={DAIContract} />
+            : <Splash>
+                <img src={logo} className="App-logo" alt="logo" />
+                <div style={{fontSize: '2rem'}}>SwapShare</div>
+                <div>An anonymous, direct peer-to-peer crypto lending service</div>
+              </Splash>
+          }
+        </Route>
+        <Route path='/2'>
+          test a second route
+        </Route>
+      </div>
+    </Router>
   );
 }
 
-export default App;
+export default App

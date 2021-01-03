@@ -89,7 +89,6 @@ const BorrowRequest = ({ account, swapShareContract, daiContract, setUpdateReque
                 <Form.Text className="text-muted">Date and time that loan must be paid by</Form.Text>
                 <Flatpickr className="mt-2"
                     options={{ 
-                        minDate: "2017-01-01",
                         enableTime: true,
                         dateFormat: "M d, Y  h:i K",
                         defaultDate: "today",

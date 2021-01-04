@@ -76,7 +76,7 @@ const App = () => {
           </div> 
   
           <div style={{display: 'flex', alignItems: 'center'}}>
-            <div className="mr-2">{account}</div>
+            <div className="mr-4">{account}</div>
             <WalletButton provider={provider} loadWeb3Modal={loadWeb3Modal} logoutOfWeb3Modal={logoutOfWeb3Modal} />
           </div>
         </Header>

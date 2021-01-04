@@ -1,13 +1,12 @@
 import React from 'react'
 
 import { Splash } from './index'
-import logo from '../logo.svg'
+import logo from '../logo_transparent.png'
 
 const SplashPage = () => (
     <Splash>
         <img src={logo} className="App-logo" alt="logo" />
-        <div style={{fontSize: '2rem'}}>SwapShare</div>
-        <div>An anonymous, direct peer-to-peer crypto lending service</div>
+        <div style={{margin: '-6rem', fontSize: '1.3rem'}}>An anonymous, direct peer-to-peer crypto lending service</div>
     </Splash>
 )
 

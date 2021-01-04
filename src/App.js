@@ -11,11 +11,12 @@ import SwapShareABI from './abis/SwapShare.json'
 import TestnetDAI from './abis/TestnetDAI.json'
 
 import './App.css'
-import logo from './logo.svg'
 
-import { Header, Splash } from './components'
+import { Header } from './components'
+import SplashPage from './components/SplashPage'
 import WalletButton from './components/WalletButton'
 import SwapShare from './components/SwapShare'
+import OpenLoans from './components/OpenLoans'
 
 import useWeb3Modal from './hooks/useWeb3Modal'
 
@@ -61,35 +62,36 @@ const App = () => {
     <Router>
       <div className="App">
         <Header>
-          {web3 && swapShareContract && account &&
-            <div className="ml-4" style={{display: 'flex', justifyContent: 'space-between'}}>
-              <div style={{minWidth: '5rem'}}>
-                <Link style={{color: 'white'}} to='/'>home</Link>
+          <div className="ml-4">
+            {web3 && swapShareContract && account &&
+              <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                <div style={{minWidth: '10rem'}}>
+                  <Link style={{color: 'white'}} to='/'>Your Activity</Link>
+                </div>
+                <div style={{minWidth: '5rem'}}>
+                  <Link style={{color: 'white'}} to='/open-loans'>View Open Loans</Link>
+                </div>
               </div>
-              <div style={{minWidth: '5rem'}}>
-                <Link style={{color: 'white'}} to='/2'>another link</Link>
-              </div>
-            </div> 
-          }
-
+            }
+          </div> 
+  
           <div style={{display: 'flex', alignItems: 'center'}}>
             <div className="mr-2">{account}</div>
             <WalletButton provider={provider} loadWeb3Modal={loadWeb3Modal} logoutOfWeb3Modal={logoutOfWeb3Modal} />
           </div>
         </Header>
         <Switch>
+          <Route path='/open-loans'>
+            {web3 && swapShareContract && account
+              ? <OpenLoans web3={web3} account={account} swapShareContract={swapShareContract} />
+              : <SplashPage />
+            } 
+          </Route>
           <Route path='/'>
             {web3 && swapShareContract && account
               ? <SwapShare web3={web3} account={account} swapShareContract={swapShareContract} DAIContract={DAIContract} />
-              : <Splash>
-                  <img src={logo} className="App-logo" alt="logo" />
-                  <div style={{fontSize: '2rem'}}>SwapShare</div>
-                  <div>An anonymous, direct peer-to-peer crypto lending service</div>
-                </Splash>
+              : <SplashPage />
             }
-          </Route>
-          <Route path='/2'>
-            <div>test</div>
           </Route>
         </Switch>
       </div>

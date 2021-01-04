@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import Flatpickr from "react-flatpickr"
 import BigNumber from "bignumber.js"
 
+import { Title } from './index'
+
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 
@@ -59,7 +61,9 @@ const BorrowRequest = ({ account, swapShareContract, daiContract, setUpdateReque
 
     return (
         <Form noValidate validated={validated} onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column'}}>
-            <Form.Label>Create a Borrow Request</Form.Label>
+            <Form.Label>
+                <Title>Create a Borrow Request</Title>
+            </Form.Label>
 
             <Form.Group>
                 <Form.Text className="text-muted">ETH to request</Form.Text>

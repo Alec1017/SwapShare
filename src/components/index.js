@@ -10,6 +10,13 @@ export const Header = styled.header`
   color: white;
 `;
 
+export const Title = styled.div`
+  text-align: center;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+`
+
 export const Splash = styled.div`
   align-items: center;
   background-color: #282c34;

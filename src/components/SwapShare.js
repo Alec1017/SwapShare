@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import { Body, Title } from './index'
 import BorrowRequest from './BorrowRequest'
+import LoanCard from './LoanCard'
 import { LOAN_STATE } from '../Constants'
 
 import Card from 'react-bootstrap/Card'
@@ -127,28 +128,15 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
           {fulfilledLoans
             ? <div>
                 {fulfilledLoans.map((value, index) => (
-                  <Card className="mb-4" style={{color: '#282c34', minWidth: '20rem'}} key={index}>
-                      <Card.Header>{value.ethAmount} ETH requested</Card.Header>
-                      <Card.Body>
-                          <Card.Title>Posted collateral: {value.daiAmount} DAI</Card.Title>
-                          <Card.Text>Offered interest rate: {value.interestRate}%</Card.Text>
-                          <Card.Text>Total to be paid back: {value.ethPlusInterest} ETH</Card.Text>
-                          <Card.Text>Loan will be paid in full by:</Card.Text>
-                          <Card.Text>
-                              Date: {value.expirationDate}<br />
-                              Time: {value.expirationTime}
-                          </Card.Text>
-                          <div>
-                            <Button 
-                                variant={value.hasExpired ? 'success' : 'secondary'} 
-                                disabled={!value.hasExpired}
-                                onClick={claimCollateral(value.index)}
-                            >
-                              {value.hasExpired ? 'claim collateral' : 'active'}
-                            </Button>
-                          </div>
-                      </Card.Body>
-                  </Card>
+                  <LoanCard data={value} key={index}>
+                    <Button 
+                        variant={value.hasExpired ? 'success' : 'secondary'} 
+                        disabled={!value.hasExpired}
+                        onClick={claimCollateral(value.index)}
+                    >
+                      {value.hasExpired ? 'claim collateral' : 'active'}
+                    </Button>   
+                  </LoanCard>
                 ))}
               </div>
             : <div style={{height: '10rem', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#6c757d'}}>Nothing to display</div>
@@ -169,18 +157,8 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
             {borrowTransactions
               ? <div>
                   {borrowTransactions.map((value, index) => (
-                    <Card className="mb-4" style={{color: '#282c34', minWidth: '20rem'}} key={index}>
-                      <Card.Header>{value.ethAmount} ETH requested</Card.Header>
-                      <Card.Body>
-                        <Card.Title>Posted collateral: {value.daiAmount} DAI</Card.Title>
-                        <Card.Text>Offered interest rate: {value.interestRate}%</Card.Text>
-                        <Card.Text>Total to be paid back: {value.ethPlusInterest} ETH</Card.Text>
-                        <Card.Text>Loan will be paid in full by:</Card.Text>
-                        <Card.Text>
-                          Date: {value.expirationDate}<br />
-                          Time: {value.expirationTime}
-                        </Card.Text>
-                        <div>
+                    <LoanCard data={value} key={index}>
+                      <div>
                           {!value.hasExpired && 
                             <Button 
                               variant={value.state == LOAN_STATE.requested ? 'danger' : 'success'} 
@@ -201,8 +179,7 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
                             </Button>
                           }
                         </div>
-                      </Card.Body>
-                    </Card>
+                    </LoanCard>
                   ))}
                 </div>
               : <div style={{height: '10rem', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#6c757d'}}>Nothing to display</div>

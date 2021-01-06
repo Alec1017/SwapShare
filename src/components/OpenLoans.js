@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 
 import { Splash, Title } from './index'
+import LoanCard from './LoanCard'
 
 import Button from 'react-bootstrap/Button'
-import Card from 'react-bootstrap/Card'
 
 const OpenLoans = ({ web3, account, swapShareContract }) => {
     const [openLoans, setOpenLoans] = useState(null)
@@ -63,22 +63,11 @@ const OpenLoans = ({ web3, account, swapShareContract }) => {
                 {openLoans
                     ? <div>
                         {openLoans.map((value, index) => (
-                            <Card className="mb-4" style={{color: '#282c34', minWidth: '20rem'}} key={index}>
-                                <Card.Header>{value.ethAmount} ETH requested</Card.Header>
-                                <Card.Body>
-                                    <Card.Title>Posted collateral: {value.daiAmount} DAI</Card.Title>
-                                    <Card.Text>Offered interest rate: {value.interestRate}%</Card.Text>
-                                    <Card.Text>Total to be paid back: {value.ethPlusInterest} ETH</Card.Text>
-                                    <Card.Text>Loan will be paid in full by:</Card.Text>
-                                    <Card.Text>
-                                        Date: {value.expirationDate}<br />
-                                        Time: {value.expirationTime}
-                                    </Card.Text>
-                                    <Button variant='success' onClick={fulfillLoan(value.index, value.ethAmount)}>
-                                        fulfill loan
-                                    </Button>
-                                </Card.Body>
-                            </Card>
+                          <LoanCard data={value} key={index}>
+                            <Button variant='success' onClick={fulfillLoan(value.index, value.ethAmount)}>
+                                fulfill loan
+                            </Button>
+                          </LoanCard>
                         ))}
                         </div>
                     : <div style={{height: '10rem', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#6c757d'}}>

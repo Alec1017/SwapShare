@@ -15,7 +15,7 @@ const BorrowRequest = ({ account, swapShareContract, daiContract, setUpdateReque
     const [daiAmount, setDaiAmount] = useState('')
     const [ethAmount, setEthAmount] = useState('')
     const [expirationDate, setExpirationDate] = useState(null)
-    const [interestRate, setInterestRate] = useState('')
+    const [interestRate, setInterestRate] = useState('1')
 
     const handleSubmit = (event) => {
         const form = event.currentTarget;
@@ -82,11 +82,8 @@ const BorrowRequest = ({ account, swapShareContract, daiContract, setUpdateReque
             </Form.Group>
 
             <Form.Group>
-                <Form.Text className="text-muted">Interest rate that you will borrow at</Form.Text>
-                <Form.Control placeholder="Interest rate" value={interestRate} onChange={handleChange(setInterestRate)} required />
-                <Form.Control.Feedback type="invalid">
-                    Please specify an interest rate
-                </Form.Control.Feedback>
+                <Form.Text className="text-muted">Interest rate that you will borrow at: {interestRate}%</Form.Text>
+                <Form.Control value={interestRate} onChange={handleChange(setInterestRate)} type="range" min="1" max="20" required />
             </Form.Group>
 
             <Form.Group>
@@ -105,7 +102,7 @@ const BorrowRequest = ({ account, swapShareContract, daiContract, setUpdateReque
                 />
             </Form.Group>
 
-            <Button className="mt-2" variant="light" type="submit">Submit</Button>
+            <Button className="mt-4" variant="light" type="submit">Submit</Button>
         </Form>
     );
   }

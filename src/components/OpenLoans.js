@@ -63,7 +63,7 @@ const OpenLoans = ({ web3, account, swapShareContract }) => {
                 {openLoans
                     ? <div>
                         {openLoans.map((value, index) => (
-                          <LoanCard data={value} key={index}>
+                          <LoanCard data={value} index={index}>
                             <Button variant='success' onClick={fulfillLoan(value.index, value.ethAmount)}>
                                 fulfill loan
                             </Button>

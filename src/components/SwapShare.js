@@ -5,7 +5,6 @@ import BorrowRequest from './BorrowRequest'
 import LoanCard from './LoanCard'
 import { LOAN_STATE } from '../Constants'
 
-import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 
 
@@ -128,7 +127,7 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
           {fulfilledLoans
             ? <div>
                 {fulfilledLoans.map((value, index) => (
-                  <LoanCard data={value} key={index}>
+                  <LoanCard data={value} index={index}>
                     <Button 
                         variant={value.hasExpired ? 'success' : 'secondary'} 
                         disabled={!value.hasExpired}
@@ -157,7 +156,7 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
             {borrowTransactions
               ? <div>
                   {borrowTransactions.map((value, index) => (
-                    <LoanCard data={value} key={index}>
+                    <LoanCard data={value} index={index}>
                       <div>
                           {!value.hasExpired && 
                             <Button 

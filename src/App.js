@@ -32,7 +32,7 @@ const App = () => {
   const [swapShareContract, setSwapShareContract] = useState(null)
   const [DAIContract, setDAIContract] = useState(null)
 
-  const[isCorrectNetwork, setIsCorrectNetwork] = useState(true)
+  const [isCorrectNetwork, setIsCorrectNetwork] = useState(true)
   const [isConnected, setIsConnected] = useState(false)
 
   useEffect(() => {

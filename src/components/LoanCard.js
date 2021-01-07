@@ -8,17 +8,27 @@ const LoanCard = ({ data, index, children }) => {
 
     return (
         <Card className="mb-4" style={{color: '#282c34', minWidth: '20rem'}} key={index}>
-            <Card.Header style={{display: 'flex', justifyContent: 'space-between'}}>
+            <Card.Header style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                 <div>
                     <div>Requested: {data.ethAmount} ETH</div>
                     <div>Collateral: {data.daiAmount} DAI</div>
                 </div>
                 <div 
-                    
+                    style={{
+                        backgroundColor: '#C0C0C0', 
+                        width: '2rem', 
+                        height: '2rem',
+                        borderRadius: '0.25rem',
+                        cursor: 'pointer',
+                        textAlign: 'center'
+                    }}
                     onClick={() => setOpen(!open)} 
                     aria-expanded={open}
                 >
-                    {open ? '-' : '+'}
+                    {open 
+                        ? <b>-</b>
+                        : <b>+</b>
+                    }
                 </div>
             </Card.Header>
             <Collapse in={open}>
@@ -31,7 +41,6 @@ const LoanCard = ({ data, index, children }) => {
                             <div>Date: <b>{data.expirationDate}</b></div>
                             <div>Time: <b>{data.expirationTime}</b></div>
                         </div>
-              
                         { children }
                     </Card.Body>
 

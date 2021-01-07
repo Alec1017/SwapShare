@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 
-import { Body, Title } from './index'
+import { Container, Title } from './index'
 import BorrowRequest from './BorrowRequest'
 import LoanCard from './LoanCard'
 import { LOAN_STATE } from '../Constants'
 
 import Button from 'react-bootstrap/Button'
+import Col from 'react-bootstrap/Col'
 
 
 const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
@@ -120,9 +121,9 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
   }
 
   return (
-    <div style={{display: 'flex', backgroundColor: '#282c34', justifyContent: 'space-between'}}>
-      <Body>
-        <div className="ml-4">
+    <Container>
+      <div style={{display: 'flex', backgroundColor: '#282c34', justifyContent: 'space-between'}}>
+        <Col className="mx-4" md={3}>
           <Title className="mb-4">Loans You have Fulfilled</Title>
           {fulfilledLoans
             ? <div>
@@ -140,52 +141,52 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
               </div>
             : <div style={{height: '10rem', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#6c757d'}}>Nothing to display</div>
           }
-        </div>
-      </Body>
-      <Body>
-        <BorrowRequest 
-          account={account} 
-          swapShareContract={swapShareContract} 
-          daiContract={DAIContract} 
-          setUpdateRequests={setUpdateRequests} 
-        />
-      </Body>
-      <Body>
-          <div className="mr-4">
-            <Title className="mb-4">Borrow Requests</Title>
-            {borrowTransactions
-              ? <div>
-                  {borrowTransactions.map((value, index) => (
-                    <LoanCard data={value} index={index}>
-                      <div>
-                          {!value.hasExpired && 
-                            <Button 
-                              variant={value.state == LOAN_STATE.requested ? 'danger' : 'success'} 
-                              disabled={value.state == LOAN_STATE.fulfilled}
-                              onClick={cancelBorrowRequest(value.index)}
-                            >
-                              {value.state == LOAN_STATE.requested ? 'cancel request' : 'active'}
-                            </Button>
-                          }
-                          {value.state == LOAN_STATE.fulfilled &&
-                            <Button 
-                              variant={value.hasExpired ? "danger" : "primary"} 
-                              className="ml-2"
-                              disabled={value.hasExpired}
-                              onClick={payBackLoan(value.index, value.ethPlusInterest)}
-                            >
-                              {value.hasExpired ? 'Loan has Defaulted' : 'Pay back loan'}
-                            </Button>
-                          }
-                        </div>
-                    </LoanCard>
-                  ))}
-                </div>
-              : <div style={{height: '10rem', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#6c757d'}}>Nothing to display</div>
-            }
-          </div>
-      </Body>
-    </div>
+        </Col>
+
+        <Col className="mx-4" md={3}>
+          <BorrowRequest 
+            account={account} 
+            swapShareContract={swapShareContract} 
+            daiContract={DAIContract} 
+            setUpdateRequests={setUpdateRequests} 
+          />
+        </Col>
+
+        <Col className="mx-4" md={3}>
+          <Title className="mb-4">Borrow Requests</Title>
+          {borrowTransactions
+            ? <div>
+                {borrowTransactions.map((value, index) => (
+                  <LoanCard data={value} index={index}>
+                    <div>
+                        {!value.hasExpired && 
+                          <Button 
+                            variant={value.state == LOAN_STATE.requested ? 'danger' : 'success'} 
+                            disabled={value.state == LOAN_STATE.fulfilled}
+                            onClick={cancelBorrowRequest(value.index)}
+                          >
+                            {value.state == LOAN_STATE.requested ? 'cancel request' : 'active'}
+                          </Button>
+                        }
+                        {value.state == LOAN_STATE.fulfilled &&
+                          <Button 
+                            variant={value.hasExpired ? "danger" : "primary"} 
+                            className="ml-2"
+                            disabled={value.hasExpired}
+                            onClick={payBackLoan(value.index, value.ethPlusInterest)}
+                          >
+                            {value.hasExpired ? 'Loan has Defaulted' : 'Pay back loan'}
+                          </Button>
+                        }
+                      </div>
+                  </LoanCard>
+                ))}
+              </div>
+            : <div style={{height: '10rem', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#6c757d'}}>Nothing to display</div>
+          }
+        </Col>
+      </div>
+    </Container>
   );
 }
 

@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 
-import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 import Collapse from 'react-bootstrap/Collapse'
 
@@ -14,9 +13,13 @@ const LoanCard = ({ data, index, children }) => {
                     <div>Requested: {data.ethAmount} ETH</div>
                     <div>Collateral: {data.daiAmount} DAI</div>
                 </div>
-                <Button variant="secondary" onClick={() => setOpen(!open)} aria-expanded={open}>
-                    {open ? 'close' : 'expand'}
-                </Button>
+                <div 
+                    
+                    onClick={() => setOpen(!open)} 
+                    aria-expanded={open}
+                >
+                    {open ? '-' : '+'}
+                </div>
             </Card.Header>
             <Collapse in={open}>
                 <div>

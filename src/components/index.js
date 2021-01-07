@@ -8,6 +8,7 @@ export const Header = styled.header`
   align-items: center;
   justify-content: space-between;
   color: white;
+  width: 100vw;
 `;
 
 export const Title = styled.div`
@@ -28,16 +29,14 @@ export const Splash = styled.div`
   padding-top: 7rem;
 `;
 
-export const Body = styled.div`
+export const Container = styled.div`
   align-items: center;
   background-color: #282c34;
   color: white;
   min-height: 90vh;
   font-size: 1.2rem;
-  display: flex;
-  flex-direction: column;
+  width: 100vw;
   padding-top: 7rem;
-  width: 32%;
 `;
 
 export const Image = styled.img`

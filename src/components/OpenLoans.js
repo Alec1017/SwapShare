@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 
-import { Splash, Title } from './index'
+import { Container, Title } from './index'
 import LoanCard from './LoanCard'
 
 import Button from 'react-bootstrap/Button'
+import Col from 'react-bootstrap/Col'
 
 const OpenLoans = ({ web3, account, swapShareContract }) => {
     const [openLoans, setOpenLoans] = useState(null)
@@ -57,25 +58,25 @@ const OpenLoans = ({ web3, account, swapShareContract }) => {
       }
 
     return (
-        <Splash>
-            <div className="mr-4">
-                <Title className="mb-4">Open Loan Requests</Title>
-                {openLoans
-                    ? <div>
-                        {openLoans.map((value, index) => (
-                          <LoanCard data={value} index={index}>
-                            <Button variant='success' onClick={fulfillLoan(value.index, value.ethAmount)}>
-                                fulfill loan
-                            </Button>
-                          </LoanCard>
-                        ))}
-                        </div>
-                    : <div style={{height: '10rem', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#6c757d'}}>
-                        No loans to display at this time
-                        </div>
-                }
-            </div>
-        </Splash>
+      <Container>
+        <Col className="mx-auto" md={4}>
+          <Title className="mb-4">Open Loan Requests</Title>
+          {openLoans
+            ? <div>
+                {openLoans.map((value, index) => (
+                  <LoanCard data={value} index={index}>
+                    <Button variant='success' onClick={fulfillLoan(value.index, value.ethAmount)}>
+                        fulfill loan
+                    </Button>
+                  </LoanCard>
+                ))}
+                </div>
+            : <div style={{height: '10rem', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#6c757d'}}>
+                No loans to display at this time
+              </div>
+          }
+        </Col>
+      </Container>
     )
   }
 

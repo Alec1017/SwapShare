@@ -12,7 +12,7 @@ import TestnetDAI from './abis/TestnetDAI.json'
 
 import './App.css'
 
-import { Header } from './components'
+import { Header, WrongNetHeader } from './components'
 import SplashPage from './components/SplashPage'
 import WalletButton from './components/WalletButton'
 import SwapShare from './components/SwapShare'
@@ -29,6 +29,19 @@ const App = () => {
 
   const [swapShareContract, setSwapShareContract] = useState(null)
   const [DAIContract, setDAIContract] = useState(null)
+
+  const[isCorrectNetwork, setIsCorrectNetwork] = useState(true)
+
+  useEffect(() => {
+    switch(window.ethereum.networkVersion) {
+      case '5777': // Mainnet is 1, Rinkeby is 4
+        setIsCorrectNetwork(true)
+        break
+      default:
+        setIsCorrectNetwork(false)
+        break
+    }
+  }, [networkID])
 
   useEffect(() => {
     if (provider != null) {
@@ -61,25 +74,41 @@ const App = () => {
   return (
     <Router>
       <div className="App">
-        <Header>
-          <div className="ml-4">
-            {web3 && swapShareContract && account &&
-              <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                <div style={{minWidth: '10rem'}}>
-                  <Link style={{color: 'white'}} to='/'>Your Activity</Link>
+        <div>
+          {isCorrectNetwork 
+            ? <Header>
+                <div className="ml-4">
+                  {web3 && swapShareContract && account &&
+                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                      <div style={{minWidth: '10rem'}}>
+                        <Link style={{color: 'white'}} to='/'>Your Activity</Link>
+                      </div>
+                      <div style={{minWidth: '5rem'}}>
+                        <Link style={{color: 'white'}} to='/open-loans'>View Open Loans</Link>
+                      </div>
+                    </div>
+                  }
+                </div> 
+        
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                  <div className="mr-4">{account}</div>
+                  <WalletButton 
+                    provider={provider} 
+                    loadWeb3Modal={() => {
+                      if (isCorrectNetwork) {
+                        loadWeb3Modal()
+                      } else {
+                        setIsCorrectNetwork(false)
+                      }
+                    }} 
+                    logoutOfWeb3Modal={logoutOfWeb3Modal} />
                 </div>
-                <div style={{minWidth: '5rem'}}>
-                  <Link style={{color: 'white'}} to='/open-loans'>View Open Loans</Link>
-                </div>
-              </div>
-            }
-          </div> 
-  
-          <div style={{display: 'flex', alignItems: 'center'}}>
-            <div className="mr-4">{account}</div>
-            <WalletButton provider={provider} loadWeb3Modal={loadWeb3Modal} logoutOfWeb3Modal={logoutOfWeb3Modal} />
-          </div>
-        </Header>
+              </Header>
+            : <WrongNetHeader>
+                <div>Swap Share is currently only available on the Rinkeby Testnet</div>
+              </WrongNetHeader>
+          }
+        </div>
         <Switch>
           <Route path='/open-loans'>
             {web3 && swapShareContract && account

@@ -2,11 +2,21 @@ import styled from "styled-components"
 
 export const Header = styled.header`
   background-color: #282c34;
-  min-height: 10vh;
+  min-height: 8vh;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  color: white;
+  width: 100vw;
+`;
+
+export const WrongNetHeader = styled.header`
+  background-color: #F35454;
+  min-height: 8vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: white;
   width: 100vw;
 `;
@@ -22,7 +32,7 @@ export const Splash = styled.div`
   align-items: center;
   background-color: #282c34;
   color: white;
-  min-height: 90vh;
+  min-height: 92vh;
   font-size: 1.2rem;
   display: flex;
   flex-direction: column;
@@ -33,7 +43,7 @@ export const Container = styled.div`
   align-items: center;
   background-color: #282c34;
   color: white;
-  min-height: 90vh;
+  min-height: 92vh;
   font-size: 1.2rem;
   width: 100vw;
   padding-top: 7rem;

@@ -12,6 +12,8 @@ import TestnetDAI from './abis/TestnetDAI.json'
 
 import './App.css'
 
+import { METAMASK_NETWORKS } from './Constants'
+
 import { Header, WrongNetHeader } from './components'
 import SplashPage from './components/SplashPage'
 import WalletButton from './components/WalletButton'
@@ -33,15 +35,14 @@ const App = () => {
   const[isCorrectNetwork, setIsCorrectNetwork] = useState(true)
 
   useEffect(() => {
-    switch(window.ethereum.networkVersion) {
-      case '5777': // Mainnet is 1, Rinkeby is 4
-        setIsCorrectNetwork(true)
-        break
-      default:
-        setIsCorrectNetwork(false)
-        break
-    }
-  }, [networkID])
+    setIsCorrectNetwork(METAMASK_NETWORKS.ganache == window.ethereum.networkVersion)
+
+    window.ethereum.on('chainChanged', (_chainId) => window.location.reload())
+    window.ethereum.on('accountsChanged', (accounts) => {
+      setAccount(accounts[0])
+    })
+
+  }, [])
 
   useEffect(() => {
     if (provider != null) {
@@ -94,13 +95,7 @@ const App = () => {
                   <div className="mr-4">{account}</div>
                   <WalletButton 
                     provider={provider} 
-                    loadWeb3Modal={() => {
-                      if (isCorrectNetwork) {
-                        loadWeb3Modal()
-                      } else {
-                        setIsCorrectNetwork(false)
-                      }
-                    }} 
+                    loadWeb3Modal={loadWeb3Modal}
                     logoutOfWeb3Modal={logoutOfWeb3Modal} />
                 </div>
               </Header>

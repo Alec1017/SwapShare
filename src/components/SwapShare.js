@@ -14,6 +14,15 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
   const [borrowTransactions, setBorrowTransactions] = useState(null)
   const [updateRequests, setUpdateRequests] = useState(true)
 
+
+  // Data is refreshed when the user switches accounts
+  useEffect(() => {
+    if (!updateRequests) {
+      getAddressBorrows()
+      getAddressFulfilledLoans()
+    }
+  }, [account])
+
   useEffect(() => {
     if (updateRequests) {
       getAddressBorrows()

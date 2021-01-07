@@ -137,7 +137,7 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
           {fulfilledLoans
             ? <div>
                 {fulfilledLoans.map((value, index) => (
-                  <LoanCard data={value} index={index}>
+                  <LoanCard data={value} key={index}>
                     <Button 
                         variant={value.hasExpired ? 'success' : 'secondary'} 
                         disabled={!value.hasExpired}
@@ -166,7 +166,7 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
           {borrowTransactions
             ? <div>
                 {borrowTransactions.map((value, index) => (
-                  <LoanCard data={value} index={index}>
+                  <LoanCard data={value} key={index}>
                     <div>
                         {!value.hasExpired && 
                           <Button 

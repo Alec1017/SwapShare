@@ -27,7 +27,6 @@ const BorrowRequest = ({ account, swapShareContract, daiContract, setUpdateReque
             defaultDate: "today",
             minDate: "today",
             onChange: (date) => {
-                console.log(date)
                 let utcTimestamp = date[0].getTime() / 1000
                 setExpirationDate(utcTimestamp)
             } 

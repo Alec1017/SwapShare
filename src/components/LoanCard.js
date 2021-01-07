@@ -3,11 +3,11 @@ import React, { useState } from 'react'
 import Card from 'react-bootstrap/Card'
 import Collapse from 'react-bootstrap/Collapse'
 
-const LoanCard = ({ data, index, children }) => {
+const LoanCard = ({ data, children }) => {
     const [open, setOpen] = useState(false)
 
     return (
-        <Card className="mb-4" style={{color: '#282c34', minWidth: '20rem'}} key={index}>
+        <Card className="mb-4" style={{color: '#282c34', minWidth: '20rem'}}>
             <Card.Header style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                 <div>
                     <div>Requested: {data.ethAmount} ETH</div>

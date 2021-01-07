@@ -33,6 +33,7 @@ const App = () => {
   const [DAIContract, setDAIContract] = useState(null)
 
   const[isCorrectNetwork, setIsCorrectNetwork] = useState(true)
+  const [isConnected, setIsConnected] = useState(false)
 
   useEffect(() => {
     setIsCorrectNetwork(METAMASK_NETWORKS.ganache == window.ethereum.networkVersion)
@@ -59,6 +60,8 @@ const App = () => {
 
   useEffect(() => {
     if (web3 != null) {
+      setIsConnected(true)
+
       setSwapShareContract(new web3.eth.Contract(
         SwapShareABI.abi,
         SwapShareABI.networks[networkID].address
@@ -92,7 +95,7 @@ const App = () => {
                 </div> 
         
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                  <div className="mr-4">{account}</div>
+                  {isConnected && <div className="mr-4">{account}</div>}
                   <WalletButton 
                     provider={provider} 
                     loadWeb3Modal={loadWeb3Modal}

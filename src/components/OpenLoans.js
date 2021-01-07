@@ -11,7 +11,7 @@ const OpenLoans = ({ web3, account, swapShareContract }) => {
 
     useEffect(() => {
         getAllOpenLoans()
-    }, [])
+    }, [account])
 
     useEffect(() => {
         if (openLoans && openLoans.length === 0) {
@@ -64,7 +64,7 @@ const OpenLoans = ({ web3, account, swapShareContract }) => {
           {openLoans
             ? <div>
                 {openLoans.map((value, index) => (
-                  <LoanCard data={value} index={index}>
+                  <LoanCard data={value} key={index}>
                     <Button variant='success' onClick={fulfillLoan(value.index, value.ethAmount)}>
                         fulfill loan
                     </Button>

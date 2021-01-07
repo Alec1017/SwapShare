@@ -17,7 +17,7 @@ const BorrowRequest = ({ account, swapShareContract, daiContract, setUpdateReque
     const [daiAmount, setDaiAmount] = useState('')
     const [ethAmount, setEthAmount] = useState('')
     const [expirationDate, setExpirationDate] = useState(null)
-    const [interestRate, setInterestRate] = useState('1')
+    const [interestRate, setInterestRate] = useState('3')
 
 
     useEffect(() => {

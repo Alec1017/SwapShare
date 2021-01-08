@@ -16,3 +16,10 @@ export const METAMASK_NETWORKS = {
     kovan: "42",
     ganache: "5777"
 }
+
+// Time (in seconds) for Day, Hour, Minute
+export const TIME_SECONDS = {
+    day: 86400,
+    hour: 3600,
+    minute: 60
+}

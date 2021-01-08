@@ -36,10 +36,11 @@ const LoanCard = ({ data, children }) => {
                     <Card.Body>
                         <div className="mb-3">Interest rate: <b>{data.interestRate}%</b></div>
                         <div className="mb-3">To be paid back: <b>{data.ethPlusInterest} ETH</b></div>
-                        <div>To be paid in full by: </div>
+                        <div>Loan Duration: </div>
                         <div className="ml-4 mb-3">
-                            <div>Date: <b>{data.expirationDate}</b></div>
-                            <div>Time: <b>{data.expirationTime}</b></div>
+                            <div>Days: <b>{data.loanDuration.days}</b></div>
+                            <div>Hours: <b>{data.loanDuration.hours}</b></div>
+                            <div>Minutes: <b>{data.loanDuration.minutes}</b></div>
                         </div>
                         { children }
                     </Card.Body>

@@ -1363,12 +1363,12 @@
         }
       },
       "links": {},
-      "address": "0x0AbcDca3E95C87cf0d2aB55D11d700366a36D6bf",
-      "transactionHash": "0xc50415b386aa50633d9e9e1e854336f949526bf61dc2ac76b1bad0598f6a43bc"
+      "address": "0x8B6f126408029dAA27a8f9FFB4BfC79666CbDD6b",
+      "transactionHash": "0xa1b3eddea2253a1a898e7f2d93923546d22eb45140f7e77469f280d89802810a"
     }
   },
   "schemaVersion": "3.3.2",
-  "updatedAt": "2021-01-02T21:57:17.206Z",
+  "updatedAt": "2021-01-08T21:01:35.637Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "ERC20 minting logic Sourced from OpenZeppelin and thoroughly butchered to remove security guards. Anybody can mint - STRICTLY FOR TEST PURPOSES",

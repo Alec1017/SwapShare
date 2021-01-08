@@ -31,6 +31,7 @@ contract SwapShare {
 
         uint256 index;
         uint256 expiration;
+        uint256 expirationDelta;
         uint256 daiAmount;
         uint256 ethAmount;
         uint256 ethPlusInterest;
@@ -58,7 +59,7 @@ contract SwapShare {
     }
 
     // Create a new loan request
-    function requestLoan(uint256 expirationTimestamp, uint256 daiAmount, uint256 ethAmount, uint interestRate) public {
+    function requestLoan(uint256 expirationTimeDelta, uint256 daiAmount, uint256 ethAmount, uint interestRate) public {
         // Transfer DAI tokens to this contract
         _token.transferFrom(msg.sender, address(this), daiAmount);
 
@@ -71,7 +72,8 @@ contract SwapShare {
                 msg.sender,
                 address(0),
                 _loansLength, 
-                expirationTimestamp, 
+                0,
+                expirationTimeDelta, 
                 daiAmount,
                 ethAmount,
                 ethAmount.add(ethAmount.mul(interestRate).div(100)),
@@ -145,6 +147,7 @@ contract SwapShare {
         // Update the loan to FULFILLED state
         _loans[loanIndex].state = LoanState.FULFILLED;
         _loans[loanIndex].lender = msg.sender;
+        _loans[loanIndex].expiration = _loans[loanIndex].expirationDelta.add(block.timestamp);
 
         // Track this wallet as the lender for this loan
         _addressLendIndex[msg.sender].push(loanIndex);

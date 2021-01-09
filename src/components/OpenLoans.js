@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import { Container, Title } from './index'
 import LoanCard from './LoanCard'
+import { LOAN_STATE, TIME_SECONDS } from '../Constants'
 
 import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col'
@@ -28,16 +29,28 @@ const OpenLoans = ({ web3, account, swapShareContract }) => {
             result.map(value => {
               if (value['valid']) {
                 const expiration = new Date(parseInt(value['expiration']) * 1000)
-                
+                const expirationDelta = parseInt(value['expirationDelta'])
+                const now = new Date()
+    
+                const numDays = Math.floor(expirationDelta / TIME_SECONDS.day)
+                const remainingHours = expirationDelta - (numDays * TIME_SECONDS.day)
+    
+                const numHours = Math.floor(remainingHours / TIME_SECONDS.hour)
+                const remainingMinutes = remainingHours - (numHours * TIME_SECONDS.hour)
+    
+                const numMinutes = Math.floor(remainingMinutes / TIME_SECONDS.minute)
+    
                 transactions.push({
                   'index': value['index'],
-                  'expirationDate': expiration.toDateString(),
-                  'expirationTime': expiration.toLocaleTimeString(),
+                  'expirationDate': (value['state'] == LOAN_STATE.fulfilled ? expiration.toDateString() : ''),
+                  'expirationTime': (value['state'] == LOAN_STATE.fulfilled ? expiration.toLocaleTimeString() : ''),
+                  'loanDuration': {days: numDays, hours: numHours, minutes: numMinutes},
                   'daiAmount': web3.utils.fromWei(value['daiAmount'], 'ether'),
                   'ethAmount': web3.utils.fromWei(value['ethAmount'], 'ether'),
                   'ethPlusInterest': web3.utils.fromWei(value['ethPlusInterest'], 'ether'),
                   'interestRate': value['interestRate'],
-                  'state': value['state']
+                  'state': value['state'],
+                  'hasExpired': (value['state'] == LOAN_STATE.fulfilled && (expiration < now))
                 })
               }
             })

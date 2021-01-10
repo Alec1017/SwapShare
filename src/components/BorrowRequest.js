@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState } from 'react'
 import BigNumber from "bignumber.js"
 
 import { Title } from './index'

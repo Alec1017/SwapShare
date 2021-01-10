@@ -19,6 +19,7 @@ import SplashPage from './components/SplashPage'
 import WalletButton from './components/WalletButton'
 import SwapShare from './components/SwapShare'
 import OpenLoans from './components/OpenLoans'
+import GetRinkebyDAI from './components/GetRinkebyDAI'
 
 import useWeb3Modal from './hooks/useWeb3Modal'
 
@@ -83,12 +84,15 @@ const App = () => {
             ? <Header>
                 <div className="ml-4">
                   {web3 && swapShareContract && account &&
-                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                      <div style={{minWidth: '10rem'}}>
+                    <div style={{display: 'flex', justifyContent: 'space-between', minWidth: '30rem'}}>
+                      <div>
                         <Link style={{color: 'white'}} to='/'>Your Activity</Link>
                       </div>
-                      <div style={{minWidth: '5rem'}}>
+                      <div>
                         <Link style={{color: 'white'}} to='/open-loans'>View Open Loans</Link>
+                      </div>
+                      <div>
+                        <Link style={{color: 'white'}} to='/rinkeby-dai'>Get Rinkeby DAI</Link>
                       </div>
                     </div>
                   }
@@ -111,6 +115,12 @@ const App = () => {
           <Route path='/open-loans'>
             {web3 && swapShareContract && account
               ? <OpenLoans web3={web3} account={account} swapShareContract={swapShareContract} />
+              : <SplashPage />
+            } 
+          </Route>
+          <Route path='/rinkeby-dai'>
+            {web3 && swapShareContract && account
+              ? <GetRinkebyDAI />
               : <SplashPage />
             } 
           </Route>

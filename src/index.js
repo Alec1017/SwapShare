@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import "flatpickr/dist/themes/light.css"
 import 'bootstrap/dist/css/bootstrap.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';

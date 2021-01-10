@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react'
-import flatpickr from "flatpickr"
 import BigNumber from "bignumber.js"
 
 import { Title } from './index'
@@ -12,52 +11,36 @@ const BorrowRequest = ({ account, swapShareContract, daiContract, setUpdateReque
     const [approved, setApproved] = useState(false)
     const approvalAmount = new BigNumber('1000e+18').toFixed()
 
-    const inputRef = useRef(null)
-
     const [daiAmount, setDaiAmount] = useState('')
     const [ethAmount, setEthAmount] = useState('')
-    const [expirationTimeDelta, setExpirationTimeDelta] = useState(null)
     const [loanDuration, setLoanDuration] = useState({
-                                                days:    '0',
-                                                hours:   '0',
-                                                minutes: '0'
+                                                days:    '',
+                                                hours:   '',
+                                                minutes: ''
                                             })
     const [interestRate, setInterestRate] = useState('3')
 
 
-    // useEffect(() => {
-    //     flatpickr(inputRef.current, {
-    //         enableTime: true,
-    //         dateFormat: "M d, Y  h:i K",
-    //         defaultDate: "today",
-    //         minDate: "today",
-    //         onChange: (date) => {
-    //             let utcTimestamp = date[0].getTime() / 1000
-    //             setExpirationDate(utcTimestamp)
-    //         } 
-    //     })
-    // }, [])
-
-    useEffect(() => {
-        let now = new Date()
-        let timeDelta = new Date()
-        timeDelta.setDate(timeDelta.getDate() + parseInt(loanDuration.days))
-        timeDelta.setHours(timeDelta.getHours() + parseInt(loanDuration.hours))
-        timeDelta.setMinutes(timeDelta.getMinutes() + parseInt(loanDuration.minutes))
-
-        let expirationDelta = parseInt((timeDelta.getTime() / 1000) - (now.getTime() / 1000))
-
-        setExpirationTimeDelta(expirationDelta)
-    }, [loanDuration])
-
     const handleSubmit = (event) => {
         const form = event.currentTarget;
 
+        const loanDays = loanDuration.days == '' ? 0 : parseInt(loanDuration.days)
+        const loanHours = loanDuration.hours == '' ? 0 : parseInt(loanDuration.hours)
+        const loanMinutes = loanDuration.minutes == '' ? 0 : parseInt(loanDuration.minutes)
+       
+        let now = new Date()
+        let timeDelta = new Date()
+        timeDelta.setDate(timeDelta.getDate() + loanDays)
+        timeDelta.setHours(timeDelta.getHours() + loanHours)
+        timeDelta.setMinutes(timeDelta.getMinutes() + loanMinutes)
+
+        let expirationDelta = parseInt((timeDelta.getTime() / 1000) - (now.getTime() / 1000))
+    
         if (form.checkValidity() === false) {
           event.stopPropagation();
         } else {
             setValidated(true);
-            submitBorrowRequest()
+            submitBorrowRequest(expirationDelta)
         }
 
         event.preventDefault()
@@ -67,19 +50,19 @@ const BorrowRequest = ({ account, swapShareContract, daiContract, setUpdateReque
         setFunc(e.target.value)
     }
 
-    function submitBorrowRequest() {
+    function submitBorrowRequest(expirationDelta) {
         let amountToSend = new BigNumber(`${daiAmount}e+18`).toFixed()
         let ethRequested = new BigNumber(`${ethAmount}e+18`).toFixed()
 
         if (approved) {
-            sendDAI(expirationTimeDelta, amountToSend, ethRequested, interestRate)
+            sendDAI(expirationDelta, amountToSend, ethRequested, interestRate)
         } else {
             daiContract.methods
             .approve(swapShareContract._address, approvalAmount)
             .send({from: account})
             .then(() => {
                 setApproved(true)
-                sendDAI(expirationTimeDelta, amountToSend, ethRequested, interestRate)
+                sendDAI(expirationDelta, amountToSend, ethRequested, interestRate)
             })
             .catch(e => console.error(e))
         }
@@ -119,11 +102,6 @@ const BorrowRequest = ({ account, swapShareContract, daiContract, setUpdateReque
                 <Form.Control value={interestRate} onChange={handleChange(setInterestRate)} type="range" min="1" max="20" required />
             </Form.Group>
 
-            {/* <Form.Group>
-                <Form.Text className="text-muted mb-2" style={{fontSize: '1.1rem'}}>Date and time that loan must be paid by</Form.Text>
-                <Form.Control type="date" ref={inputRef} />
-            </Form.Group> */}
-
             <Form.Group>
                 <Form.Text className="text-muted mb-2" style={{fontSize: '1.1rem'}}>Duration of loan before expiration</Form.Text>
                 <div style={{display: 'flex', justifyContent: 'space-between'}}>
@@ -133,35 +111,37 @@ const BorrowRequest = ({ account, swapShareContract, daiContract, setUpdateReque
                             placeholder="0"
                             value={loanDuration.days} 
                             onChange={e => {
-                                let days = e.target.value == '' ? '0' : e.target.value
-                                setLoanDuration({...loanDuration, days: days})
-                            }}
-                            required />
+                                // let days = e.target.value == '' ? '0' : e.target.value
+                                setLoanDuration({...loanDuration, days: e.target.value})
+                            }} />
                         <Form.Text style={{textAlign: 'center'}}>Days</Form.Text>
                     </div>
                     <div style={{width: '6rem'}}>   
                         <Form.Control 
                             style={{textAlign: 'center'}} 
+                            placeholder="0"
                             value={loanDuration.hours} 
                             onChange={e => {
-                                let hours = e.target.value == '' ? '0' : e.target.value
-                                setLoanDuration({...loanDuration, hours: hours})
-                            }}
-                            required />
+                                // let hours = e.target.value == '' ? '0' : e.target.value
+                                setLoanDuration({...loanDuration, hours: e.target.value})
+                            }} />
                         <Form.Text style={{textAlign: 'center'}}>Hours</Form.Text>
                     </div>
                     <div style={{width: '6rem'}}>   
                         <Form.Control 
                             style={{textAlign: 'center'}} 
+                            placeholder="0"
                             value={loanDuration.minutes} 
                             onChange={e => {
-                                let minutes = e.target.value == '' ? '0' : e.target.value
-                                setLoanDuration({...loanDuration, minutes: minutes})
-                            }}
-                            required />
+                                // let minutes = e.target.value == '' ? '0' : e.target.value
+                                setLoanDuration({...loanDuration, minutes: e.target.value})
+                            }} />
                         <Form.Text style={{textAlign: 'center'}}>Minutes</Form.Text>
                     </div>
                 </div>
+                <Form.Control.Feedback type="invalid">
+                    Please specify a correct duration.
+                </Form.Control.Feedback>
             </Form.Group>
 
             <Button className="mt-4" variant="light" type="submit">Submit</Button>

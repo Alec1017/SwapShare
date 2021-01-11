@@ -5,7 +5,7 @@ import { Container, Title } from './index'
 import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col'
 
-const GetRinkebyDAI = ({DAIContract, account}) => {
+const GetMockDAI = ({DAIContract, account}) => {
     const [tokenAddress, setTokenAddress] = useState(null)
     const [loading, setLoading] = useState(false)
 
@@ -44,4 +44,4 @@ const GetRinkebyDAI = ({DAIContract, account}) => {
     )
 }
 
-export default GetRinkebyDAI
+export default GetMockDAI

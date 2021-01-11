@@ -12,14 +12,14 @@ import SwapShareDAI from './abis/SwapShareDAI.json'
 
 import './App.css'
 
-import { METAMASK_NETWORKS, COMPOUND_DAI_CONTRACT } from './Constants'
+import { METAMASK_NETWORKS } from './Constants'
 
 import { Header, WrongNetHeader } from './components'
 import SplashPage from './components/SplashPage'
 import WalletButton from './components/WalletButton'
 import SwapShare from './components/SwapShare'
 import OpenLoans from './components/OpenLoans'
-import GetRinkebyDAI from './components/GetRinkebyDAI'
+import GetMockDAI from './components/GetMockDAI'
 
 import useWeb3Modal from './hooks/useWeb3Modal'
 
@@ -120,7 +120,7 @@ const App = () => {
           </Route>
           <Route path='/rinkeby-dai'>
             {web3 && swapShareContract && account
-              ? <GetRinkebyDAI account={account} DAIContract={DAIContract} />
+              ? <GetMockDAI account={account} DAIContract={DAIContract} />
               : <SplashPage />
             } 
           </Route>

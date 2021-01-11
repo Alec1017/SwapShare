@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Container, Title } from './index'
 import BorrowRequest from './BorrowRequest'
 import LoanCard from './LoanCard'
+import LoadingModal from './LoadingModal'
 import { LOAN_STATE, TIME_SECONDS } from '../Constants'
 
 import Button from 'react-bootstrap/Button'
@@ -13,6 +14,10 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
   const [fulfilledLoans, setFulfilledLoans] = useState(null)
   const [borrowTransactions, setBorrowTransactions] = useState(null)
   const [updateRequests, setUpdateRequests] = useState(true)
+
+  const [loadingCancel, setLoadingCancel] = useState(false)
+  const [loadingRepay, setLoadingRepay] = useState(false)
+  const [loadingClaim, setLoadingClaim] = useState(false)
 
 
   // Data is refreshed when the user switches accounts
@@ -121,15 +126,25 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
 
 
   const cancelBorrowRequest = (index) => () => {
+    setLoadingCancel(true)
+
     swapShareContract.methods
         .cancelRequestedLoan(index)
         .send({from: account})
-        .then(() => getAddressBorrows())
+        .then(() => {
+          setLoadingCancel(false)
+          getAddressBorrows()
+        })
+        .catch(e => {
+          setLoadingCancel(false)
+        })
   }  
 
 
   const payBackLoan = (index, amount)  => () => {
     const ethAmount = web3.utils.toWei(amount, 'ether').toString()
+
+    setLoadingRepay(true)
 
     swapShareContract.methods
       .repayLoan(index)
@@ -137,16 +152,32 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
         from: account,
         value: ethAmount
       })
-      .then(() => getAddressBorrows())
+      .then(() => {
+        getAddressBorrows()
+        setLoadingRepay(false)
+      })
+      .catch(e => {
+        console.error(e)
+        setLoadingRepay(false)
+      })
   }
 
   const claimCollateral = (index) => () => {
+    setLoadingClaim(true)
+
     swapShareContract.methods
       .claimDefaultedLoan(index)
       .send({
         from: account
       })
-      .then(() => getAddressFulfilledLoans())
+      .then(() => {
+        getAddressFulfilledLoans()
+        setLoadingClaim(false)
+      })
+      .catch(e => {
+        console.error(e)
+        setLoadingClaim(false)
+      })
   }
 
   return (
@@ -214,6 +245,17 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
             : <div style={{height: '10rem', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#6c757d'}}>Nothing to display</div>
           }
         </Col>
+      </div>
+      <div>
+        <LoadingModal show={loadingCancel}>
+          <div style={{textAlign: 'center'}}>Awaiting blockchain cancel confirmation...</div>
+        </LoadingModal>
+        <LoadingModal show={loadingRepay}>
+          <div style={{textAlign: 'center'}}>Awaiting blockchain repayment confirmation...</div>
+        </LoadingModal>
+        <LoadingModal show={loadingClaim}>
+          <div style={{textAlign: 'center'}}>Awaiting blockchain claim confirmation...</div>
+        </LoadingModal>
       </div>
     </Container>
   );

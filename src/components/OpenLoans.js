@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import { Container, Title } from './index'
 import LoanCard from './LoanCard'
+import LoadingModal from './LoadingModal'
 import { LOAN_STATE, TIME_SECONDS } from '../Constants'
 
 import Button from 'react-bootstrap/Button'
@@ -9,6 +10,8 @@ import Col from 'react-bootstrap/Col'
 
 const OpenLoans = ({ web3, account, swapShareContract }) => {
     const [openLoans, setOpenLoans] = useState(null)
+
+    const [loadingFulfill, setLoadingFulfill] = useState(false)
 
     useEffect(() => {
         getAllOpenLoans()
@@ -60,6 +63,7 @@ const OpenLoans = ({ web3, account, swapShareContract }) => {
 
       const fulfillLoan = (index, amount) => () => {
         const ethAmount = web3.utils.toWei(amount, 'ether').toString()
+        setLoadingFulfill(true)
     
         swapShareContract.methods
           .fulfillLoan(index)
@@ -67,7 +71,14 @@ const OpenLoans = ({ web3, account, swapShareContract }) => {
             from: account,
             value: ethAmount
           })
-          .then(() => getAllOpenLoans())
+          .then(() => {
+            setLoadingFulfill(false)
+            getAllOpenLoans()
+          })
+          .catch(e => {
+            console.error(e)
+            setLoadingFulfill(false)
+          })
       }
 
     return (
@@ -89,6 +100,11 @@ const OpenLoans = ({ web3, account, swapShareContract }) => {
               </div>
           }
         </Col>
+        <div>
+          <LoadingModal show={loadingFulfill}>
+            <div style={{textAlign: 'center'}}>Awaiting blockchain fulfill confirmation...</div>
+          </LoadingModal>
+        </div>
       </Container>
     )
   }

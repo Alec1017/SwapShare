@@ -9,7 +9,7 @@ import Button from 'react-bootstrap/Button'
 const BorrowRequest = ({ account, swapShareContract, daiContract, setUpdateRequests }) => {
     const [validated, setValidated] = useState(false)
     const [approved, setApproved] = useState(false)
-    const approvalAmount = new BigNumber('1000e+18').toFixed()
+    const approvalAmount = new BigNumber('100000e+18').toFixed()
 
     const [daiAmount, setDaiAmount] = useState('')
     const [ethAmount, setEthAmount] = useState('')

@@ -1,23 +1,41 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { Container, Title } from './index'
-import { COMPOUND_DAI_CONTRACT } from '../Constants'
 
+import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col'
 
-const GetRinkebyDAI = () => (
-    <Container>
-        <Col className="mx-auto" md={6} style={{textAlign: 'center'}}>
-            <Title>Getting Rinkeby DAI token</Title>
-            <div className="mt-4">
-                This app uses the same DAI token that <a style={{color: 'white'}} href="https://compound.finance"><b>Compound.finance</b></a> uses for its DAI faucet
-            </div>
-            <div className="mt-4">
-                This contract address below can be imported into MetaMask as a new token to access DAI:
-            </div>
-            <div className="mt-1">{ COMPOUND_DAI_CONTRACT }</div>
-        </Col>
-    </Container>
-)
+const GetRinkebyDAI = ({DAIContract, account}) => {
+    const [tokenAddress, setTokenAddress] = useState(null)
+
+    const mintTokens = () => {
+        DAIContract.methods
+        .mint(account)
+        .send({from: account})
+        .then(() => {
+            setTokenAddress(DAIContract._address)
+        })
+    }
+
+    return (
+        <Container>
+            <Col className="mx-auto" md={6} style={{textAlign: 'center'}}>
+                <Title>Getting Rinkeby DAI token</Title>
+                <div className="mt-4">
+                    This app uses a mock DAI token, which can be minted to your account by using the button below.
+                </div>
+                <div className="mt-4">
+                    <Button variant="light" onClick={mintTokens}>Mint 1000 DAI</Button>
+                </div>
+                {tokenAddress &&
+                    <div className="mt-4">
+                        To access the DAI token in MetaMask, import the token using this contract address:
+                        <div>{tokenAddress}</div>
+                    </div>
+                }
+            </Col>
+        </Container>
+    )
+}
 
 export default GetRinkebyDAI

@@ -23,6 +23,3 @@ export const TIME_SECONDS = {
     hour: 3600,
     minute: 60
 }
-
-// The DAI contract that Compound uses for its faucet on the Rinkeby Test Net
-export const COMPOUND_DAI_CONTRACT = '0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea'

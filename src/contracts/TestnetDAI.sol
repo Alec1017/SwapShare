@@ -10,11 +10,11 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  * Anybody can mint - STRICTLY FOR TEST PURPOSES
  */
 contract TestnetDAI is ERC20 {
-    uint public initialSupply = 1000;
+    uint public amountToMint = 1000;
 
     constructor() public ERC20("TestnetDAI", "DAI") {}
 
     function mint(address recipient) public {
-        _mint(recipient, initialSupply * 10 ** uint(decimals()));
+        _mint(recipient, amountToMint * 10 ** uint(decimals()));
     }
 }

@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import Web3Modal from "web3modal";
-import WalletConnectProvider from "@walletconnect/web3-provider";
+import WalletConnectProvider from "@walletconnect/web3-provider"
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 // Enter a valid infura key here to avoid being rate limited
 // You can get a key for free at https://infura.io/register
-const INFURA_ID = "INVALID_INFURA_KEY";
+const INFURA_ID = process.env.PROJECT_ID;
 
-const NETWORK_NAME = "mainnet";
+const NETWORK_NAME = "rinkeby";
 
 function useWeb3Modal(config = {}) {
   const [web3Modal, setWeb3Modal] = useState();

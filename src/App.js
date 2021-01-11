@@ -12,7 +12,7 @@ import TestnetDAI from './abis/TestnetDAI.json'
 
 import './App.css'
 
-import { METAMASK_NETWORKS } from './Constants'
+import { METAMASK_NETWORKS, COMPOUND_DAI_CONTRACT } from './Constants'
 
 import { Header, WrongNetHeader } from './components'
 import SplashPage from './components/SplashPage'
@@ -120,7 +120,7 @@ const App = () => {
           </Route>
           <Route path='/rinkeby-dai'>
             {web3 && swapShareContract && account
-              ? <GetRinkebyDAI />
+              ? <GetRinkebyDAI account={account} DAIContract={DAIContract} />
               : <SplashPage />
             } 
           </Route>

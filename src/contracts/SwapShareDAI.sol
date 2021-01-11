@@ -9,10 +9,10 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  * Sourced from OpenZeppelin and thoroughly butchered to remove security guards.
  * Anybody can mint - STRICTLY FOR TEST PURPOSES
  */
-contract TestnetDAI is ERC20 {
+contract SwapShareDAI is ERC20 {
     uint public amountToMint = 1000;
 
-    constructor() public ERC20("TestnetDAI", "DAI") {}
+    constructor() public ERC20("SwapShareDAI", "sDAI") {}
 
     function mint(address recipient) public {
         _mint(recipient, amountToMint * 10 ** uint(decimals()));

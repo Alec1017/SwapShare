@@ -7,13 +7,18 @@ import Col from 'react-bootstrap/Col'
 
 const GetRinkebyDAI = ({DAIContract, account}) => {
     const [tokenAddress, setTokenAddress] = useState(null)
+    const [loading, setLoading] = useState(false)
 
     const mintTokens = () => {
+        setLoading(true)
+        setTokenAddress(null)
+
         DAIContract.methods
         .mint(account)
         .send({from: account})
         .then(() => {
             setTokenAddress(DAIContract._address)
+            setLoading(false)
         })
     }
 
@@ -27,11 +32,12 @@ const GetRinkebyDAI = ({DAIContract, account}) => {
                 <div className="mt-4">
                     <Button variant="light" onClick={mintTokens}>Mint 1000 DAI</Button>
                 </div>
-                {tokenAddress &&
-                    <div className="mt-4">
+                {tokenAddress
+                    ? <div className="mt-4">
                         To access the DAI token in MetaMask, import the token using this contract address:
                         <div>{tokenAddress}</div>
-                    </div>
+                      </div>
+                    : <div>{loading && <div className="mt-4">Please wait up to 30 seconds while DAI is minted for you...</div>}</div>
                 }
             </Col>
         </Container>

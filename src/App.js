@@ -8,7 +8,7 @@ import {
 } from 'react-router-dom'
 
 import SwapShareABI from './abis/SwapShare.json'
-import TestnetDAI from './abis/TestnetDAI.json'
+import SwapShareDAI from './abis/SwapShareDAI.json'
 
 import './App.css'
 
@@ -37,7 +37,7 @@ const App = () => {
   const [isConnected, setIsConnected] = useState(false)
 
   useEffect(() => {
-    setIsCorrectNetwork(METAMASK_NETWORKS.ganache == window.ethereum.networkVersion)
+    setIsCorrectNetwork(METAMASK_NETWORKS.rinkeby == window.ethereum.networkVersion)
 
     window.ethereum.on('chainChanged', (_chainId) => window.location.reload())
     window.ethereum.on('accountsChanged', (accounts) => {
@@ -69,8 +69,8 @@ const App = () => {
       ))
 
       setDAIContract(new web3.eth.Contract(
-        TestnetDAI.abi,
-        TestnetDAI.networks[networkID].address
+        SwapShareDAI.abi,
+        SwapShareDAI.networks[networkID].address
       ))
     }
   }, [web3])

@@ -25,7 +25,7 @@ const GetMockDAI = ({DAIContract, account}) => {
     return (
         <Container>
             <Col className="mx-auto" md={6} style={{textAlign: 'center'}}>
-                <Title>Getting Rinkeby DAI token</Title>
+                <Title>Getting Ropsten DAI token</Title>
                 <div className="mt-4">
                     This app uses a mock DAI token, which can be minted to your account by using the button below.
                 </div>

@@ -8,15 +8,15 @@ module.exports = {
       port: 7545,
       network_id: "*" // Match any network id
     },
-    rinkeby: {
+    ropsten: {
       provider: () => 
         new HDWalletProvider({
           mnemonic: {
             phrase: process.env.SEED_PHRASE
           },
-          providerOrUrl: process.env.RINKEBY_INFURA_ENDPOINT
+          providerOrUrl: process.env.INFURA_ENDPOINT
         }),
-      network_id: 4
+      network_id: 3
     }
   },
   contracts_directory: './src/contracts/',

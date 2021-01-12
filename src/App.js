@@ -29,6 +29,7 @@ const App = () => {
   const [networkID, setNetworkID] = useState(null)
   const [account, setAccount] = useState(null)
   const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal()
+  const [metamaskDetected, setMetamaskDetected] = useState(false)
 
   const [swapShareContract, setSwapShareContract] = useState(null)
   const [DAIContract, setDAIContract] = useState(null)
@@ -37,13 +38,16 @@ const App = () => {
   const [isConnected, setIsConnected] = useState(false)
 
   useEffect(() => {
-    setIsCorrectNetwork(METAMASK_NETWORKS.rinkeby == window.ethereum.networkVersion)
+    if (window.ethereum) {
+      setMetamaskDetected(true)
+      
+      setIsCorrectNetwork(METAMASK_NETWORKS.ropsten == window.ethereum.networkVersion)
 
-    window.ethereum.on('chainChanged', (_chainId) => window.location.reload())
-    window.ethereum.on('accountsChanged', (accounts) => {
-      setAccount(accounts[0])
-    })
-
+      window.ethereum.on('chainChanged', (_chainId) => window.location.reload())
+      window.ethereum.on('accountsChanged', (accounts) => {
+        setAccount(accounts[0])
+      })
+    }
   }, [])
 
   useEffect(() => {
@@ -80,7 +84,7 @@ const App = () => {
     <Router>
       <div className="App">
         <div>
-          {isCorrectNetwork 
+          {(isCorrectNetwork && metamaskDetected)
             ? <Header>
                 <div className="ml-4">
                   {web3 && swapShareContract && account &&
@@ -92,7 +96,7 @@ const App = () => {
                         <Link style={{color: 'white'}} to='/open-loans'>View Open Loans</Link>
                       </div>
                       <div>
-                        <Link style={{color: 'white'}} to='/rinkeby-dai'>Get Rinkeby DAI</Link>
+                        <Link style={{color: 'white'}} to='/ropsten-dai'>Get Ropsten DAI</Link>
                       </div>
                     </div>
                   }
@@ -107,7 +111,8 @@ const App = () => {
                 </div>
               </Header>
             : <WrongNetHeader>
-                <div>Swap Share is currently only available on the Rinkeby Testnet</div>
+                {!isCorrectNetwork && <div>Swap Share is currently only available on the Ropsten Testnet</div>}
+                {!metamaskDetected && <div>Please download the MetaMask Wallet browser extension</div>}
               </WrongNetHeader>
           }
         </div>
@@ -118,7 +123,7 @@ const App = () => {
               : <SplashPage />
             } 
           </Route>
-          <Route path='/rinkeby-dai'>
+          <Route path='/ropsten-dai'>
             {web3 && swapShareContract && account
               ? <GetMockDAI account={account} DAIContract={DAIContract} />
               : <SplashPage />

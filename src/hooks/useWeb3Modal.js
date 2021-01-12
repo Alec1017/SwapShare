@@ -9,7 +9,7 @@ dotenv.config()
 // You can get a key for free at https://infura.io/register
 const INFURA_ID = process.env.PROJECT_ID;
 
-const NETWORK_NAME = "rinkeby";
+const NETWORK_NAME = "ropsten";
 
 function useWeb3Modal(config = {}) {
   const [web3Modal, setWeb3Modal] = useState();

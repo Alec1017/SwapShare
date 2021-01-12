@@ -39,7 +39,7 @@ const App = () => {
 
   useEffect(() => {
     if (window.ethereum) {      
-      setIsCorrectNetwork(METAMASK_NETWORKS.ropsten == window.ethereum.networkVersion)
+      setIsCorrectNetwork(METAMASK_NETWORKS.ropsten === window.ethereum.networkVersion)
 
       window.ethereum.on('chainChanged', (_chainId) => window.location.reload())
       window.ethereum.on('accountsChanged', (accounts) => {

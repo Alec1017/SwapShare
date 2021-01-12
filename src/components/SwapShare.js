@@ -37,13 +37,13 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
   }, [updateRequests])
 
   useEffect(() => {
-    if (borrowTransactions && borrowTransactions.length == 0) {
+    if (borrowTransactions && borrowTransactions.length === 0) {
       setBorrowTransactions(null)
     }
   }, [borrowTransactions])
 
   useEffect(() => {
-    if (fulfilledLoans && fulfilledLoans.length == 0) {
+    if (fulfilledLoans && fulfilledLoans.length === 0) {
       setFulfilledLoans(null)
     }
   }, [fulfilledLoans])
@@ -70,15 +70,15 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
 
             transactions.push({
               'index': value['index'],
-              'expirationDate': (value['state'] == LOAN_STATE.fulfilled ? expiration.toDateString() : ''),
-              'expirationTime': (value['state'] == LOAN_STATE.fulfilled ? expiration.toLocaleTimeString() : ''),
+              'expirationDate': (value['state'] === LOAN_STATE.fulfilled ? expiration.toDateString() : ''),
+              'expirationTime': (value['state'] === LOAN_STATE.fulfilled ? expiration.toLocaleTimeString() : ''),
               'loanDuration': {days: numDays, hours: numHours, minutes: numMinutes},
               'daiAmount': web3.utils.fromWei(value['daiAmount'], 'ether'),
               'ethAmount': web3.utils.fromWei(value['ethAmount'], 'ether'),
               'ethPlusInterest': web3.utils.fromWei(value['ethPlusInterest'], 'ether'),
               'interestRate': value['interestRate'],
               'state': value['state'],
-              'hasExpired': (value['state'] == LOAN_STATE.fulfilled && (expiration < now))
+              'hasExpired': (value['state'] === LOAN_STATE.fulfilled && (expiration < now))
             })
           }
         })
@@ -108,15 +108,15 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
 
             transactions.push({
               'index': value['index'],
-              'expirationDate': (value['state'] == LOAN_STATE.fulfilled ? expiration.toDateString() : ''),
-              'expirationTime': (value['state'] == LOAN_STATE.fulfilled ? expiration.toLocaleTimeString() : ''),
+              'expirationDate': (value['state'] === LOAN_STATE.fulfilled ? expiration.toDateString() : ''),
+              'expirationTime': (value['state'] === LOAN_STATE.fulfilled ? expiration.toLocaleTimeString() : ''),
               'loanDuration': {days: numDays, hours: numHours, minutes: numMinutes},
               'daiAmount': web3.utils.fromWei(value['daiAmount'], 'ether'),
               'ethAmount': web3.utils.fromWei(value['ethAmount'], 'ether'),
               'ethPlusInterest': web3.utils.fromWei(value['ethPlusInterest'], 'ether'),
               'interestRate': value['interestRate'],
               'state': value['state'],
-              'hasExpired': (value['state'] == LOAN_STATE.fulfilled && (expiration < now))
+              'hasExpired': (value['state'] === LOAN_STATE.fulfilled && (expiration < now))
             })
           }
         })
@@ -221,14 +221,14 @@ const SwapShare = ({web3, account, swapShareContract, DAIContract}) => {
                     <div>
                         {!value.hasExpired && 
                           <Button 
-                            variant={value.state == LOAN_STATE.requested ? 'danger' : 'success'} 
-                            disabled={value.state == LOAN_STATE.fulfilled}
+                            variant={value.state === LOAN_STATE.requested ? 'danger' : 'success'} 
+                            disabled={value.state === LOAN_STATE.fulfilled}
                             onClick={cancelBorrowRequest(value.index)}
                           >
-                            {value.state == LOAN_STATE.requested ? 'cancel request' : 'active'}
+                            {value.state === LOAN_STATE.requested ? 'cancel request' : 'active'}
                           </Button>
                         }
-                        {value.state == LOAN_STATE.fulfilled &&
+                        {value.state === LOAN_STATE.fulfilled &&
                           <Button 
                             variant={value.hasExpired ? "danger" : "primary"} 
                             className="ml-2"

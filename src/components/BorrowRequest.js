@@ -29,9 +29,9 @@ const BorrowRequest = ({ account, swapShareContract, daiContract, setUpdateReque
     const handleSubmit = (event) => {
         const form = event.currentTarget;
 
-        const loanDays = loanDuration.days == '' ? 0 : parseInt(loanDuration.days)
-        const loanHours = loanDuration.hours == '' ? 0 : parseInt(loanDuration.hours)
-        const loanMinutes = loanDuration.minutes == '' ? 0 : parseInt(loanDuration.minutes)
+        const loanDays = loanDuration.days === '' ? 0 : parseInt(loanDuration.days)
+        const loanHours = loanDuration.hours === '' ? 0 : parseInt(loanDuration.hours)
+        const loanMinutes = loanDuration.minutes === '' ? 0 : parseInt(loanDuration.minutes)
        
         let now = new Date()
         let timeDelta = new Date()
@@ -42,9 +42,9 @@ const BorrowRequest = ({ account, swapShareContract, daiContract, setUpdateReque
         let expirationDelta = parseInt((timeDelta.getTime() / 1000) - (now.getTime() / 1000))
     
         if (form.checkValidity() === false) {
-          event.stopPropagation();
+          event.stopPropagation()
         } else {
-            setValidated(true);
+            setValidated(true)
             submitBorrowRequest(expirationDelta)
         }
 

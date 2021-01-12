@@ -11,20 +11,19 @@ const INFURA_ID = process.env.PROJECT_ID;
 
 const NETWORK_NAME = "ropsten";
 
-function useWeb3Modal(config = {}) {
+function useWeb3Modal() {
   const [web3Modal, setWeb3Modal] = useState();
   const [provider, setProvider] = useState();
-  const { infuraId = INFURA_ID, NETWORK = NETWORK_NAME } = config;
 
   useEffect(() => {
     const modal = new Web3Modal({
-      network: NETWORK,
+      network: NETWORK_NAME,
       cacheProvider: true,
       providerOptions: {
         walletconnect: {
           package: WalletConnectProvider,
           options: {
-            infuraId,
+            INFURA_ID,
           },
         },
       },

@@ -45,15 +45,15 @@ const OpenLoans = ({ web3, account, swapShareContract }) => {
     
                 transactions.push({
                   'index': value['index'],
-                  'expirationDate': (value['state'] == LOAN_STATE.fulfilled ? expiration.toDateString() : ''),
-                  'expirationTime': (value['state'] == LOAN_STATE.fulfilled ? expiration.toLocaleTimeString() : ''),
+                  'expirationDate': (value['state'] === LOAN_STATE.fulfilled ? expiration.toDateString() : ''),
+                  'expirationTime': (value['state'] === LOAN_STATE.fulfilled ? expiration.toLocaleTimeString() : ''),
                   'loanDuration': {days: numDays, hours: numHours, minutes: numMinutes},
                   'daiAmount': web3.utils.fromWei(value['daiAmount'], 'ether'),
                   'ethAmount': web3.utils.fromWei(value['ethAmount'], 'ether'),
                   'ethPlusInterest': web3.utils.fromWei(value['ethPlusInterest'], 'ether'),
                   'interestRate': value['interestRate'],
                   'state': value['state'],
-                  'hasExpired': (value['state'] == LOAN_STATE.fulfilled && (expiration < now))
+                  'hasExpired': (value['state'] === LOAN_STATE.fulfilled && (expiration < now))
                 })
               }
             })

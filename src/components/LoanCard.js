@@ -38,7 +38,7 @@ const LoanCard = ({ data, children }) => {
                     <Card.Body>
                         <div className="mb-3">Interest rate: <b>{data.interestRate}%</b></div>
                         <div className="mb-3">To be paid back: <b>{data.ethPlusInterest} ETH</b></div>
-                        {data.state == LOAN_STATE.requested &&
+                        {data.state === LOAN_STATE.requested &&
                             <div>
                                 <div>Proposed Loan Duration: </div>
                                 <div className="ml-4 mb-3">
@@ -49,7 +49,7 @@ const LoanCard = ({ data, children }) => {
                             </div> 
                         }
 
-                        {data.state == LOAN_STATE.fulfilled &&
+                        {data.state === LOAN_STATE.fulfilled &&
                             <div>
                                 <div>Loan Expiration Date: </div>
                                 <div className="ml-4 mb-3">

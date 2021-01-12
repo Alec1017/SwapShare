@@ -29,7 +29,7 @@ const App = () => {
   const [networkID, setNetworkID] = useState(null)
   const [account, setAccount] = useState(null)
   const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal()
-  const [metamaskDetected, setMetamaskDetected] = useState(false)
+  const [metamaskDetected, setMetamaskDetected] = useState(true)
 
   const [swapShareContract, setSwapShareContract] = useState(null)
   const [DAIContract, setDAIContract] = useState(null)
@@ -38,15 +38,15 @@ const App = () => {
   const [isConnected, setIsConnected] = useState(false)
 
   useEffect(() => {
-    if (window.ethereum) {
-      setMetamaskDetected(true)
-      
+    if (window.ethereum) {      
       setIsCorrectNetwork(METAMASK_NETWORKS.ropsten == window.ethereum.networkVersion)
 
       window.ethereum.on('chainChanged', (_chainId) => window.location.reload())
       window.ethereum.on('accountsChanged', (accounts) => {
         setAccount(accounts[0])
       })
+    } else {
+      setMetamaskDetected(false)
     }
   }, [])
 

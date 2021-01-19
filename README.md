@@ -1,7 +1,7 @@
-# Setup
+# SwapShare
 
-connect to ganache with: ganache-cli -h 172.21.96.1
+An anonymous, fee free, peer-to-peer crypto lending service running on the ropsten testnet
 
-make sure metamask extension is switched to ganache account
+## live site
 
-may have to import account to metamask from ganache
+[https://swapshare.netlify.app/](https://swapshare.netlify.app/)
